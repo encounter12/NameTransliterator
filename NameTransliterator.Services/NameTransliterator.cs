@@ -9,7 +9,7 @@
     {
         public string TransliterateName(NameTransliterationModel transliterationModel, string nameForTransliteration)
         {
-            string transliteratedName = String.Copy(nameForTransliteration);
+            string transliteratedName = String.Copy(nameForTransliteration).ToLower();
 
             foreach (var item in transliterationModel.TransliterationRegexDictionary)
             {

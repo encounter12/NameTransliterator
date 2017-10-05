@@ -1,7 +1,6 @@
 ﻿namespace NameTransliterator.Services
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Text.RegularExpressions;
@@ -17,6 +16,10 @@
             using (StreamReader reader = File.OpenText(filePath))
             {
                 String currentLine;
+
+                //TODO: Implement logic that will parse first line of the text file into SourceLanguage and TargetLanguage, e. g. <Bulgarian - English>
+                transliterationModel.SourceLanguage = "bulgarian";
+                transliterationModel.TargetLanguage = "english";
 
                 while ((currentLine = reader.ReadLine()) != null)
                 {
@@ -38,7 +41,7 @@
 
                         if (!keyContainsLettersOrDigitsOnly &&
                             isKeyValidRegexPattern &&
-                            !transliterationModel.TransliterationRegexDictionary.ContainsKey(keyValueArray[0]));
+                            !transliterationModel.TransliterationRegexDictionary.ContainsKey(keyValueArray[0]))
                         {
                             transliterationModel.TransliterationRegexDictionary.Add(keyValueArray[0], keyValueArray[1]);
                         }
@@ -52,14 +55,6 @@
                     }
                 }
             }
-
-            IComparer<string> lengthComparer = new LengthComparer();
-
-            transliterationModel.SwappedTransliterationDictionary = 
-                this.SwapDictionaryKeysWithValues(transliterationModel.TransliterationDictionary, lengthComparer);
-
-            transliterationModel.SwappedTransliterationRegexDictionary =
-                this.SwapDictionaryKeysWithValues(transliterationModel.SwappedTransliterationRegexDictionary, lengthComparer);
 
             return transliterationModel;
         }
@@ -77,40 +72,6 @@
             }
 
             return false;
-        }
-
-        public SortedDictionary<string, string> SwapDictionaryKeysWithValues(
-            SortedDictionary<string, string> initialDictionary,
-            IComparer<string> comparer)
-        {
-            var swappedDictionary = new SortedDictionary<string, string>(comparer);
-
-            foreach (var item in initialDictionary)
-            {
-                if (!swappedDictionary.ContainsKey(item.Value))
-                {
-                    swappedDictionary.Add(item.Value, item.Key);
-                }
-            }
-
-            return swappedDictionary;
-        }
-
-        public SortedDictionary<string, string> SwapDictionaryKeysWithValues(
-            IDictionary<string, string> initialDictionary,
-            IComparer<string> comparer)
-        {
-            var swappedDictionary = new SortedDictionary<string, string>(comparer);
-
-            foreach (var item in initialDictionary)
-            {
-                if (!swappedDictionary.ContainsKey(item.Value))
-                {
-                    swappedDictionary.Add(item.Value, item.Key);
-                }
-            }
-
-            return swappedDictionary;
         }
     }
 }

@@ -2,6 +2,6 @@
 {
     public enum Languages
     {
-        Bulgarian, Russian
+        bulgarian, english
     }
 }
