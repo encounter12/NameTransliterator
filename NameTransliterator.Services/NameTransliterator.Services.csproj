@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <!-- <RuntimeFrameworkVersion>2.1.0-preview1-25719-04</RuntimeFrameworkVersion> -->
+    <!-- <NETStandardImplicitPackageVersion>2.1.0-preview1-25719-04</NETStandardImplicitPackageVersion> -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="TransliterationSets\Bulgarian-English.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="TransliterationSets\Bulgarian-English.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
