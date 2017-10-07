@@ -1,4 +1,5 @@
-﻿а - a
+﻿Bulgarian - English
+а - a
 б - b
 в - v
 г - g

@@ -2,126 +2,148 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
-    using System.Reflection;
 
     using NameTransliterator.Services;
     using NameTransliterator.Services.Models;
 
     public class EntryPoint
     {
-        private static NameTransliterator nameTransliterator;
-
-        private static NameTransliterationModel transliterationModel;
-
         public static void Main(string[] args)
         {
-            InitializeTransliteration();
+            var nameTransliterator = new NameTransliterator();
 
-            Console.WriteLine("Enter source language:");
+            var validators = new Validators();
 
-            string sourceLanguage = Console.ReadLine();
+            var transliterationModels = new List<NameTransliterationModel>();
 
-            sourceLanguage = sourceLanguage.ToLower();
-
-            Console.WriteLine("Enter target language:");
-
-            string targetLanguage = Console.ReadLine();
-
-            targetLanguage = targetLanguage.ToLower();
-
-            Console.WriteLine("Name for transliteration:");
-
-            string nameForTransliteration = Console.ReadLine();
-
-            bool sourceLanguageValid = Enum.GetNames(typeof(Languages)).Contains(sourceLanguage);
-
-            bool targetLanguageValid = Enum.GetNames(typeof(Languages)).Contains(targetLanguage);
-
-            var transliterationModels = new List<NameTransliterationModel>()
+            try
             {
-                transliterationModel
-            };
-
-            var comparer = new LengthComparer();
-
-            var reversedModels = new List<NameTransliterationModel>();
-
-            foreach (var model in transliterationModels)
+                transliterationModels = nameTransliterator.LoadTransliterationModels();
+            }
+            catch (Exception ex)
             {
-                bool reversedTransliterationSetExists = transliterationModels.Any(
-                    tm => tm.SourceLanguage == model.TargetLanguage && tm.TargetLanguage == model.SourceLanguage);
+                Console.WriteLine(ex.Message);
 
-                if (!reversedTransliterationSetExists)
-                {
-                    var reversedModel = new NameTransliterationModel()
-                    {
-                        TransliterationDictionary = model.TransliterationDictionary.SwapDictionaryKeysWithValues(comparer),
-                        TransliterationRegexDictionary = new SortedDictionary<string, string>(comparer),
-                        SourceLanguage = model.TargetLanguage,
-                        TargetLanguage = model.SourceLanguage
-                    };
-
-                    reversedModels.Add(reversedModel);
-                }
+                Environment.Exit(1);
             }
 
-            transliterationModels.AddRange(reversedModels);
+            string sourceInputLanguage = GetLanguageFromUser(LanguageType.Source, validators);
+
+            Console.WriteLine();
+
+            string targetInputLanguage = GetLanguageFromUser(LanguageType.Target, validators);
+
+            //TODO: Create UserTransliterationGetModel and use data annotations and self-validating models (implement IValidatableObject), 
+            // see: https://stackoverflow.com/a/3783328, and https://stackoverflow.com/a/29327343
+
+            try
+            {
+                validators.ValidateSourceAndTargetLanguageDontMatch(sourceInputLanguage, targetInputLanguage);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Environment.Exit(1);
+            }
+
+            Console.WriteLine();
+
+            string nameForTransliteration = GetTransliterationNameFromUser(validators);
 
             var searchedTransliterationModel = transliterationModels
-                .FirstOrDefault(tm => tm.SourceLanguage == sourceLanguage && tm.TargetLanguage == targetLanguage);
+                .FirstOrDefault(tm => tm.SourceLanguage == sourceInputLanguage && tm.TargetLanguage == targetInputLanguage);
 
-            string transliteratedName = null;
+            string transliteratedName = string.Empty;
 
-            if (sourceLanguageValid && targetLanguageValid && searchedTransliterationModel != null)
+            if (searchedTransliterationModel == null)
             {
-                transliteratedName = nameTransliterator.TransliterateName(searchedTransliterationModel, nameForTransliteration);
+                Console.WriteLine("The searchedTransliterationModel is null.");
+                Environment.Exit(1);
+            }
 
-                Console.WriteLine("Name transliterated ({0} - {1}): {2}",
+            try
+            {
+                transliteratedName =
+                    nameTransliterator.TransliterateName(searchedTransliterationModel, nameForTransliteration);
+
+                Console.WriteLine(
+                    "Name transliterated ({0} - {1}): {2}",
                     searchedTransliterationModel.SourceLanguage, searchedTransliterationModel.TargetLanguage, transliteratedName);
             }
-            else if (!sourceLanguageValid && !targetLanguageValid && searchedTransliterationModel == null)
+            catch (Exception ex)
             {
-                Console.WriteLine("Source and target languages are not valid. NameTransliterationModel is null. Please, try again ....");
-            }
-            else if (!sourceLanguageValid)
-            {
-                Console.WriteLine("Source language is not valid. Please, try again ....");
-            }
-            else if (!targetLanguageValid)
-            {
-                Console.WriteLine("Target language is not valid. Please, try again ....");
-            }
-            else if (searchedTransliterationModel == null)
-            {
-                Console.WriteLine("NameTransliterationModel is null. Please, try again ....");
+                Console.WriteLine(ex.Message);
+
+                Environment.Exit(1);
             }
         }
 
-        public static void InitializeTransliteration()
+        public static string GetLanguageFromUser(LanguageType languageType, Validators validators)
         {
-            var relativeFilePath = "TransliterationSets";
+            string prompt = string.Format("Enter {0} language:", languageType.ToString().ToLower());
 
-            var transliterationDictionaryFileName = "Bulgarian-English.txt";
+            string inputLanguage = null;
 
-            var fullPath = GetFileFullPath(relativeFilePath, transliterationDictionaryFileName);
+            bool currentLanguageValid = false;
 
-            var deserializer = new Deserializer();
+            do
+            {
+                try
+                {
+                    Console.WriteLine(prompt);
 
-            transliterationModel = deserializer.Deserialize(fullPath);
+                    inputLanguage = Console.ReadLine().Trim().ConvertMultipleWhitespacesToSingleSpaces().ToLower();
 
-            nameTransliterator = new NameTransliterator();
+                    validators.ValidateLanguage(inputLanguage, languageType);
+
+                    currentLanguageValid = true;
+                }
+                catch (Exception ex)
+                {
+                    currentLanguageValid = false;
+
+                    Console.WriteLine(ex.Message);
+
+                    Console.WriteLine();
+                }
+            } while (!currentLanguageValid);
+
+            return inputLanguage;
         }
 
-        public static string GetFileFullPath(string relativeFilePath, string fileName)
+        public static string GetTransliterationNameFromUser(Validators validators)
         {
-            // var currentAssemblyDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            var currentAssemblyDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string nameForTransliteration = null;
 
-            var fileFullPath = Path.Combine(currentAssemblyDirectory, relativeFilePath, fileName);
+            bool nameValid = false;
 
-            return fileFullPath;
+            do
+            {
+                //TODO: Create UserTransliterationGetModel and use data annotations 
+                try
+                {
+                    Console.WriteLine("Name for transliteration:");
+
+                    nameForTransliteration = Console.ReadLine().Trim().ConvertMultipleWhitespacesToSingleSpaces().ToLower();
+
+                    validators.ValidateName(nameForTransliteration);
+
+                    nameValid = true;
+                }
+                catch (Exception ex)
+                {
+                    nameValid = false;
+
+                    Console.WriteLine(ex.Message);
+
+                    Console.WriteLine();
+                }
+
+                
+            } while (!nameValid);
+
+            return nameForTransliteration;
         }
     }
 }

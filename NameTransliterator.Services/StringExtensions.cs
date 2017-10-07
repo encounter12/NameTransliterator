@@ -5,12 +5,7 @@
 
     public static class StringExtensions
     {
-        public static string TrimAndRemoveExtraWhiteSpaces(this string str)
-        {
-            return ConvertWhitespacesToSingleSpaces(str).Trim();
-        }
-
-        public static string ConvertWhitespacesToSingleSpaces(this string value)
+        public static string ConvertMultipleWhitespacesToSingleSpaces(this string value)
         {
             return Regex.Replace(value, @"\s+", " ");
         }
