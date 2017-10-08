@@ -23,7 +23,8 @@
                 throw new ArgumentNullException("The name for transliteration is null or empty");
             }
 
-            string transliteratedName = String.Copy(nameForTransliteration).Trim().ToLower();
+            string transliteratedName = String.Copy(nameForTransliteration)
+                .Trim().ConvertMultipleWhitespacesToSingleSpaces().ToLower();
 
             foreach (var item in transliterationModel.TransliterationRegexDictionary)
             {
@@ -39,75 +40,70 @@
             return transliteratedName;
         }
 
+        public List<LanguageSet> GetLanguageSets(List<NameTransliterationModel> transliterationModels)
+        {
+            var languageSets = new List<LanguageSet>();
+
+            languageSets = transliterationModels.Select(tm => tm.LanguageSet).ToList();
+
+            return languageSets;
+        }
+
         public List<NameTransliterationModel> LoadTransliterationModels()
         {
             var relativeFilePath = "TransliterationSets";
 
-            var transliterationDictionaryFileName = "Bulgarian-English.txt";
+            // var currentAssemblyDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
+            var currentAssemblyDirectoryPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-            NameTransliterationModel transliterationModel = GetTransliterationModel(relativeFilePath, transliterationDictionaryFileName);
+            string transliterationFilesDirPath = Path.Combine(currentAssemblyDirectoryPath, relativeFilePath);
 
-            var transliterationModels = new List<NameTransliterationModel>()
+            IEnumerable<string> files = 
+                Directory.EnumerateFiles(transliterationFilesDirPath, "*.txt", SearchOption.AllDirectories);
+
+            var deserializer = new Deserializer();
+
+            var transliterationModels = new List<NameTransliterationModel>();
+
+            int fileCounter = 1;
+
+            foreach (var file in files)
             {
-                transliterationModel
-            };
-
-            var comparer = new LengthComparer();
-
-            var reversedModels = new List<NameTransliterationModel>();
-
-            foreach (var model in transliterationModels)
-            {
-                bool reversedTransliterationSetExists = transliterationModels.Any(
-                    tm => tm.SourceLanguage == model.TargetLanguage && tm.TargetLanguage == model.SourceLanguage);
-
-                if (!reversedTransliterationSetExists)
+                try
                 {
-                    var reversedModel = new NameTransliterationModel()
-                    {
-                        TransliterationDictionary = model.TransliterationDictionary.SwapDictionaryKeysWithValues(comparer),
-                        TransliterationRegexDictionary = new SortedDictionary<string, string>(comparer),
-                        SourceLanguage = model.TargetLanguage,
-                        TargetLanguage = model.SourceLanguage
-                    };
+                    var transliterationModel = new NameTransliterationModel();
 
-                    reversedModels.Add(reversedModel);
+                    transliterationModel = deserializer.Deserialize(file, fileCounter);
+
+                    transliterationModels.Add(transliterationModel);
                 }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+
+                fileCounter++;
             }
 
-            transliterationModels.AddRange(reversedModels);
+            var comparer = new LengthComparer();
 
             return transliterationModels;
         }
 
-        public static NameTransliterationModel GetTransliterationModel(string relativeFilePath, string transliterationDictionaryFileName)
+        public NameTransliterationModel GetReversedTransliterationModel(NameTransliterationModel model, IComparer<string> comparer)
         {
-            var fullPath = GetFileFullPath(relativeFilePath, transliterationDictionaryFileName);
-
-            var deserializer = new Deserializer();
-
-            NameTransliterationModel transliterationModel = new NameTransliterationModel();
-
-            try
+            var reversedModel = new NameTransliterationModel()
             {
-                transliterationModel = deserializer.Deserialize(fullPath);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+                TransliterationDictionary = model.TransliterationDictionary.SwapDictionaryKeysWithValues(comparer),
+                TransliterationRegexDictionary = new SortedDictionary<string, string>(comparer),
+                LanguageSet = new LanguageSet()
+                {
+                    SourceLanguage = model.LanguageSet.TargetLanguage,
+                    TargetLanguage = model.LanguageSet.SourceLanguage
+                }
+            };
 
-            return transliterationModel;
-        }
-
-        private static string GetFileFullPath(string relativeFilePath, string fileName)
-        {
-            // var currentAssemblyDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            var currentAssemblyDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-            var fileFullPath = Path.Combine(currentAssemblyDirectory, relativeFilePath, fileName);
-
-            return fileFullPath;
+            return reversedModel;
         }
     }
 }

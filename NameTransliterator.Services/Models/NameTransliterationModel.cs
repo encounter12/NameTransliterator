@@ -17,8 +17,8 @@
 
         public SortedDictionary<string, string> TransliterationRegexDictionary { get; set; }
 
-        public string SourceLanguage { get; set; }
+        public int LanguageSetId { get; set; }
 
-        public string TargetLanguage { get; set; }
+        public virtual LanguageSet LanguageSet { get; set; }
     }
 }

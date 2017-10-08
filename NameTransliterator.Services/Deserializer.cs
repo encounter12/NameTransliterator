@@ -9,7 +9,7 @@
 
     public class Deserializer
     {
-        public NameTransliterationModel Deserialize(string filePath)
+        public NameTransliterationModel Deserialize(string filePath, int languageSetId)
         {
             var transliterationModel = new NameTransliterationModel();
 
@@ -21,23 +21,40 @@
 
                 int lineCounter = 1;
 
+                bool isLanguageSetSpecified = false;
+
                 while ((currentLine = reader.ReadLine()) != null)
                 {
                     currentLine = currentLine
-                        .Trim(new char[] { ' ', '<', '>', '(', ')', '[', ']'})
+                        .Trim(new char[] { ' ', '<', '>', '(', ')' })
                         .ConvertMultipleWhitespacesToSingleSpaces()
-                        .ToLower();
+                        .ToLowerInvariant();
 
-                    string[] keyValueArray = currentLine.Split(new string[] { " - " }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] keyValueArray = currentLine.Split(new string[] { " : "}, StringSplitOptions.RemoveEmptyEntries);
 
                     if (keyValueArray != null && keyValueArray.Length == 2)
                     {
-                        keyValueArray = keyValueArray.Select(s => s.Trim().ToLowerInvariant()).ToArray();
+                        keyValueArray = keyValueArray.Select(s => s.Trim(new char[] { '"' }).Trim()).ToArray();
 
-                        if (validators.IsArrayValidLanguageSet(keyValueArray))
+                        string modelSourceLanguage = keyValueArray[0].CapitalizeStringFirstChar();
+                        string modelTargetLanguage = keyValueArray[1].CapitalizeStringFirstChar();
+
+                        Language sourceLanguage = TestData.Languages.FirstOrDefault(l => l.Name == modelSourceLanguage);
+
+                        Language targetLanguage = TestData.Languages.FirstOrDefault(l => l.Name == modelTargetLanguage);
+
+                        //checks if the current line elements are languages
+                        //TODO: Set markup specifying the language set line (e.g. <Bulgarian - English>)
+                        if (sourceLanguage != null && targetLanguage != null)
                         {
-                            transliterationModel.SourceLanguage = keyValueArray[0];
-                            transliterationModel.TargetLanguage = keyValueArray[1];
+                            transliterationModel.LanguageSet = new LanguageSet()
+                            {
+                                Id = languageSetId,
+                                SourceLanguage = sourceLanguage,
+                                TargetLanguage = targetLanguage
+                            };
+
+                            isLanguageSetSpecified = true;
                         }
                         else
                         {
@@ -75,6 +92,11 @@
                     }
 
                     lineCounter++;
+                }
+
+                if (!isLanguageSetSpecified)
+                {
+                    throw new ArgumentNullException("The language set is not specified");
                 }
             }
 

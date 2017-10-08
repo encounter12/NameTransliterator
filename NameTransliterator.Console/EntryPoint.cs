@@ -9,107 +9,99 @@
 
     public class EntryPoint
     {
+        private static List<NameTransliterationModel> cachedTransliterationModels;
+
         public static void Main(string[] args)
         {
-            var nameTransliterator = new NameTransliterator();
-
             var validators = new Validators();
 
-            var transliterationModels = new List<NameTransliterationModel>();
+            var languageSets = new List<LanguageSet>();
 
             try
             {
-                transliterationModels = nameTransliterator.LoadTransliterationModels();
+                languageSets = GetLanguageSets();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-
                 Environment.Exit(1);
             }
 
-            string sourceInputLanguage = GetLanguageFromUser(LanguageType.Source, validators);
+            var sourceLanguages = languageSets.Select(ls => ls.SourceLanguage).ToList();
+
+            int selectedSourceLanguageId = GetLanguageIdFromUser(sourceLanguages, LanguageType.Source);
 
             Console.WriteLine();
 
-            string targetInputLanguage = GetLanguageFromUser(LanguageType.Target, validators);
+            var targetLanguages = languageSets
+                .Where(ls => ls.SourceLanguage.Id == selectedSourceLanguageId)
+                .Select(ls => ls.TargetLanguage)
+                .ToList();
 
-            //TODO: Create UserTransliterationGetModel and use data annotations and self-validating models (implement IValidatableObject), 
+            int targetLanguageId = GetLanguageIdFromUser(targetLanguages, LanguageType.Target);
+
+            //TODO: Create UserTransliterationInputModel and use data annotations and self-validating models (implement IValidatableObject), 
             // see: https://stackoverflow.com/a/3783328, and https://stackoverflow.com/a/29327343
 
-            try
+            Console.WriteLine();
+
+            var selectedLanguageSet = languageSets.FirstOrDefault(ls => ls.SourceLanguage.Id == selectedSourceLanguageId);
+
+            if (selectedLanguageSet == null)
             {
-                validators.ValidateSourceAndTargetLanguageDontMatch(sourceInputLanguage, targetInputLanguage);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine("The language set does not exist");
                 Environment.Exit(1);
             }
-
-            Console.WriteLine();
 
             string nameForTransliteration = GetTransliterationNameFromUser(validators);
 
-            var searchedTransliterationModel = transliterationModels
-                .FirstOrDefault(tm => tm.SourceLanguage == sourceInputLanguage && tm.TargetLanguage == targetInputLanguage);
+            var transliteratedName = GetTransliteratedName(nameForTransliteration, selectedLanguageSet.Id);
 
-            string transliteratedName = string.Empty;
-
-            if (searchedTransliterationModel == null)
-            {
-                Console.WriteLine("The searchedTransliterationModel is null.");
-                Environment.Exit(1);
-            }
-
-            try
-            {
-                transliteratedName =
-                    nameTransliterator.TransliterateName(searchedTransliterationModel, nameForTransliteration);
-
-                Console.WriteLine(
-                    "Name transliterated ({0} - {1}): {2}",
-                    searchedTransliterationModel.SourceLanguage, searchedTransliterationModel.TargetLanguage, transliteratedName);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-
-                Environment.Exit(1);
-            }
+            Console.WriteLine(
+                "Name transliterated ({0} - {1}): {2}",
+                selectedLanguageSet.SourceLanguage.Name,
+                selectedLanguageSet.TargetLanguage.Name, transliteratedName);
         }
 
-        public static string GetLanguageFromUser(LanguageType languageType, Validators validators)
+        public static int GetLanguageIdFromUser(List<Language> sourceLanguages, LanguageType languageType)
         {
-            string prompt = string.Format("Enter {0} language:", languageType.ToString().ToLower());
+            bool selectedLanguageValid = false;
 
-            string inputLanguage = null;
-
-            bool currentLanguageValid = false;
+            int selectedLanguageId = 0;
 
             do
             {
+                DisplayMenu(sourceLanguages, languageType);
+
                 try
                 {
-                    Console.WriteLine(prompt);
+                    selectedLanguageId = int.Parse(Console.ReadLine());
 
-                    inputLanguage = Console.ReadLine().Trim().ConvertMultipleWhitespacesToSingleSpaces().ToLower();
-
-                    validators.ValidateLanguage(inputLanguage, languageType);
-
-                    currentLanguageValid = true;
+                    selectedLanguageValid = true;
                 }
                 catch (Exception ex)
                 {
-                    currentLanguageValid = false;
+                    selectedLanguageValid = false;
 
                     Console.WriteLine(ex.Message);
-
                     Console.WriteLine();
                 }
-            } while (!currentLanguageValid);
 
-            return inputLanguage;
+            } while (!selectedLanguageValid);
+
+            return selectedLanguageId;
+        }
+
+        public static void DisplayMenu(List<Language> languages, LanguageType languageType)
+        {
+            Console.WriteLine("Select {0} language:", languageType.ToString().ToLower());
+
+            Console.WriteLine();
+
+            foreach (var language in languages)
+            {
+                Console.WriteLine("{0}. {1}", language.Id, language.Name);
+            }
         }
 
         public static string GetTransliterationNameFromUser(Validators validators)
@@ -139,11 +131,68 @@
 
                     Console.WriteLine();
                 }
-
-                
             } while (!nameValid);
 
             return nameForTransliteration;
+        }
+
+        public static List<LanguageSet> GetLanguageSets()
+        {
+            var nameTransliterator = new NameTransliterator();
+
+            try
+            {
+                cachedTransliterationModels = nameTransliterator.LoadTransliterationModels();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            List<LanguageSet> languageSets = nameTransliterator.GetLanguageSets(cachedTransliterationModels);
+
+            return languageSets;
+        }
+
+        public static string GetTransliteratedName(string nameForTransliteration, int selectedLanguageSetId)
+        {
+            var transliterationModels = new List<NameTransliterationModel>();
+
+            var nameTransliterator = new NameTransliterator();
+
+            if (cachedTransliterationModels == null || cachedTransliterationModels.Count == 0)
+            {
+                try
+                {
+                    cachedTransliterationModels = nameTransliterator.LoadTransliterationModels();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+            }
+
+            var searchedTransliterationModel = cachedTransliterationModels
+                .FirstOrDefault(tm => tm.LanguageSet.Id == selectedLanguageSetId);
+
+            if (searchedTransliterationModel == null)
+            {
+                throw new Exception("The searchedTransliterationModel is null.");
+            }
+
+            string transliteratedName = string.Empty;
+
+            try
+            {
+                transliteratedName =
+                    nameTransliterator.TransliterateName(searchedTransliterationModel, nameForTransliteration);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return transliteratedName;
         }
     }
 }
