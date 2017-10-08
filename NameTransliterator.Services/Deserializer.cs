@@ -30,7 +30,7 @@
                         .ConvertMultipleWhitespacesToSingleSpaces()
                         .ToLowerInvariant();
 
-                    string[] keyValueArray = currentLine.Split(new string[] { " : "}, StringSplitOptions.RemoveEmptyEntries);
+                    string[] keyValueArray = currentLine.Split(new string[] { " : ", ":" }, StringSplitOptions.RemoveEmptyEntries);
 
                     if (keyValueArray != null && keyValueArray.Length == 2)
                     {

@@ -26,6 +26,16 @@
             string transliteratedName = String.Copy(nameForTransliteration)
                 .Trim().ConvertMultipleWhitespacesToSingleSpaces().ToLower();
 
+            string transliteratedNameFromPredefinedDict;
+
+            bool nameExistsInDict = 
+                NameTransliteratorCollections.NamesDictionary.TryGetValue(transliteratedName, out transliteratedNameFromPredefinedDict);
+
+            if (nameExistsInDict)
+            {
+                return transliteratedNameFromPredefinedDict.CapitalizeEachWord();
+            }
+
             foreach (var item in transliterationModel.TransliterationRegexDictionary)
             {
                 string pattern = item.Key;
@@ -36,6 +46,8 @@
             {
                 transliteratedName = transliteratedName.Replace(item.Key, item.Value);
             }
+
+            transliteratedName = transliteratedName.CapitalizeEachWord();
 
             return transliteratedName;
         }

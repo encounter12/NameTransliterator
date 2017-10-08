@@ -8,12 +8,20 @@
 
   <ItemGroup>
     <None Remove="TransliterationSets\Bulgarian-English.txt" />
+    <None Remove="TransliterationSets\English-Bulgarian.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="TransliterationSets\Bulgarian-English.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="TransliterationSets\English-Bulgarian.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Documentation\" />
   </ItemGroup>
 
 </Project>
