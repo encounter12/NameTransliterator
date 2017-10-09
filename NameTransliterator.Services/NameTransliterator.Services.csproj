@@ -7,15 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="TransliterationSets\Bulgarian-English.txt" />
-    <None Remove="TransliterationSets\English-Bulgarian.txt" />
+    <None Remove="TransliterationSetTextFiles\Bulgarian-English.txt" />
+    <None Remove="TransliterationSetTextFiles\English-Bulgarian.txt" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="TransliterationSets\Bulgarian-English.txt">
+    <Content Include="TransliterationSetTextFiles\Bulgarian-English.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TransliterationSets\English-Bulgarian.txt">
+    <Content Include="TransliterationSetTextFiles\English-Bulgarian.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

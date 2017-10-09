@@ -55,7 +55,8 @@
 
             string nameForTransliteration = GetTransliterationNameFromUser(validators);
 
-            var transliteratedName = GetTransliteratedName(nameForTransliteration, selectedLanguageSet.Id);
+            var transliteratedName = 
+                GetTransliteratedName(nameForTransliteration, selectedLanguageSet.Id, selectedLanguageSet.SourceLanguage.Name);
 
             Console.WriteLine(
                 "Name transliterated ({0} - {1}): {2}",
@@ -154,8 +155,25 @@
             return languageSets;
         }
 
-        public static string GetTransliteratedName(string nameForTransliteration, int selectedLanguageSetId)
+        public static string GetTransliteratedName(
+            string nameForTransliteration, 
+            int selectedLanguageSetId, 
+            string sourceLanguageName)
         {
+            if (sourceLanguageName.ToLower() == "english")
+            {
+                string transliteratedNameFromDict;
+
+                bool nameExistInDictionary = NameTransliteratorCollections
+                    .LatinCyrillicNamesDictionary
+                    .TryGetValue(nameForTransliteration, out transliteratedNameFromDict);
+
+                if (nameExistInDictionary)
+                {
+                    return transliteratedNameFromDict.CapitalizeEachWord();
+                }
+            }
+
             var transliterationModels = new List<NameTransliterationModel>();
 
             var nameTransliterator = new NameTransliterator();

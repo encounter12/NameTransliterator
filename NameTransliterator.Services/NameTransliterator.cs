@@ -26,16 +26,6 @@
             string transliteratedName = String.Copy(nameForTransliteration)
                 .Trim().ConvertMultipleWhitespacesToSingleSpaces().ToLower();
 
-            string transliteratedNameFromPredefinedDict;
-
-            bool nameExistsInDict = 
-                NameTransliteratorCollections.NamesDictionary.TryGetValue(transliteratedName, out transliteratedNameFromPredefinedDict);
-
-            if (nameExistsInDict)
-            {
-                return transliteratedNameFromPredefinedDict.CapitalizeEachWord();
-            }
-
             foreach (var item in transliterationModel.TransliterationRegexDictionary)
             {
                 string pattern = item.Key;
@@ -61,9 +51,18 @@
             return languageSets;
         }
 
+        public string TransliterateName(IDictionary<string, string> namesDictionary, string nameForTransliteration)
+        {
+            string transliteratedName;
+
+            bool nameExists = namesDictionary.TryGetValue(nameForTransliteration, out transliteratedName);
+
+            return transliteratedName;
+        }
+
         public List<NameTransliterationModel> LoadTransliterationModels()
         {
-            var relativeFilePath = "TransliterationSets";
+            var relativeFilePath = "TransliterationSetTextFiles";
 
             // var currentAssemblyDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
             var currentAssemblyDirectoryPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
