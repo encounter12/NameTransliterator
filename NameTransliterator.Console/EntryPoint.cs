@@ -164,14 +164,14 @@
             {
                 string transliteratedNameFromDict;
 
-                bool nameExistInDictionary = NameTransliteratorCollections
-                    .LatinCyrillicNamesDictionary
-                    .TryGetValue(nameForTransliteration, out transliteratedNameFromDict);
+                //bool nameExistInDictionary = NameTransliteratorCollections
+                //    .LatinCyrillicNamesDictionary
+                //    .TryGetValue(nameForTransliteration, out transliteratedNameFromDict);
 
-                if (nameExistInDictionary)
-                {
-                    return transliteratedNameFromDict.CapitalizeEachWord();
-                }
+                //if (nameExistInDictionary)
+                //{
+                //    return transliteratedNameFromDict.CapitalizeEachWord();
+                //}
             }
 
             var transliterationModels = new List<NameTransliterationModel>();
