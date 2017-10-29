@@ -1,0 +1,138 @@
+Bulgarian names variations in English (use for tests):
+
+Евгений / Евгени - Evgenii, Evgeniy, Evgenyi, Evgeni
+Лъчезар - Lachezar, Luchezar
+Дончо Дудев - Doncho Doudev, Doncho Dudev
+Кънчев - Kanchev, Kunchev
+Кунчев - Kunchev, Kounchev
+Канчев - Kanchev
+Кънев - Kanev, Kunev
+Стилян - Stilyan, Stilian
+Мутафчийски - Mutafchiyski, Mutafchiiski, Mutafchiisky
+Гюзелев - Gyuzelev
+Борис Солтарийски - Boris Soltariyski, Borys Soltariiski 
+Yordan Karagyozov
+Iordan Karagyozov
+Дянков - Dyankov, Diankov
+Силвия - Silvia
+Мария - Maria
+Ния - Nia
+Иван - Ivan, Yvan
+Йордан - Yordan, Iordan, Jordan
+Йордан Йовков - Yordan Yovkov
+Йорданка Фандъкова - Yordanka Fandakova, Yordanka Fandukova
+Стоян Стоянов - Stoyan Stoyanov
+Стоян Стоянов - Stoian Stoianov
+Благой - Blagoi, Blagoy
+Николай - Nikolay, Nikolai
+Ивайло - Ivaylo, Ivailo
+Диана - Diana, Dyana
+Мариана - Mariana, Maryana
+Катя - Katya, Katia
+Петя - Petya, Petia
+Дилян - Dilyan, Dilian
+Делян - Delyan, Delian
+Йоана - Yoana
+Йоанна - Yoanna
+Грациела - Gratsiela
+Георги Минчев - Georgi Minchev, Georgy Mynchev
+444avdar
+Петър Димитров-Янкулов - Petar Dimitrov-Yankulov, Petur Dimitrov-Iankulov
+Анна-Мария - Anna-Maria
+Петър Татарчев - Petar Tatarchev
+Илия - Iliya, Ilya, Ilia
+Оля - Olia, Olya
+Оля Точева - Olya To4eva
+Черкезов - Cherkezov, Tcherkezov, 4erkezov
+Ушагелов - Ushagelov, U6agelov
+Чавдар Ушагелов - 4avdar u6agelov
+Поля Йотова - Polya Yotova, Polia Iotova
+Виктория Гурбетова - Viktoria Gurbetova
+Maria
+Petya Yancheva
+Petia Iancheva
+Таню Нейков - Tanyu Neykov
+Таньо Нейков - Tanyo Neykov, Tanio Neikov
+Надежда Славкова - Nadezhda Slavkova, Nadejda Slavkova
+Нина - Nina
+Огнян - Ognyan, Ognian
+Огнянов - Ognyanov, Ognianov
+Огнян Огнянов - Ognyan Ognyanov, Ognian Ognianov
+Джамбазов - Dzhambazov
+Ботушаров - Botusharov, Botousharov
+Ивайло Ботушаров - Ivaylo Botusharov, Ivailo Botousharov
+Петър Боздуганов - Petar Bozduganov, Petur Bozdouganov
+Боян Джоргов - Boyan Dzhorgov, Boian Djorgov, Boian Jorgov
+Петър Слабаков - Petar Slabakov
+Мишо Шамара - Misho Shamara, Mi6o 6amara
+Димитър Янкулов - Dimitar Yankulov, Dimitar Iankulov
+Чергов - Chergov, 4ergov
+Пчеларова - Pchelarova, Ptchelarova
+Диана Пчеларова - Diana Pchelarova, Dyana Ptchelarova
+Пейчева - Peycheva, Peicheva, Peytcheva
+Надежда Михайлова - Nadezhda Mihaylova, Nadejda Mihailova
+Надежда Нейнски - Nadezhda Neynski, Nadejda Neinski
+Вежди Рашидов - Vezhdi Rashidov, Vejdi Rashidov
+Слънчев Бряг - Slunchev Bryag, Slanchev Bryag, Slanchev Briag
+---------------------------------
+Transliteration sets:
+
+ou - у
+oia - оя
+oy - ой
+oi - ой
+(Дойчин Дойчинов)
+ay - ай
+ai - ай
+ey - ей
+ei - ей
+(Пейо Яворов, Пейчев, Андрей)
+of - ов
+(at the end of word in a string)
+rof - ров 
+(Dimitrov - Димитров, Petar Dimitrof-Ivanov)
+nov - нов
+(Ivanov - Иванов)
+lach - лъч
+luch - лъч
+(Лъчезар - Lachezar, Luchezar)
+kan - кън
+kun - кън
+(Kanchev, Kunchev - Кънчев)
+
+---------------------------------
+
+Remove all numbers excluding: 1, 4, 5, 6
+
+All characters excluding "e" and "n" repeating more than once should be reduced to one instance. If "e" and "n" are repeating their count should be reduced to two occurrences.
+
+-----------
+
+Sources:
+
+Bulgarian actors (Golden collection DVDs - 'Trud' newspaper)
+Bulgarian musicians
+Bulgarian scientists
+Bulgarian sports men/women
+Bulgarian politicians
+Relatives / Acquaintances (Facebook, Twitter, etc.)
+Phonebook
+Parsing Bulgarian news websites
+
+
+Excel file
+Columns: FirstName, SecondName, LastName, Source, Relation (e.g. Relatives)
+
+Name types: Personal (First name, Surname, Last name), Geographical
+
+An English Dictionary of Bulgarian Names Spelling and Pronunciation (Andrei Danchev, Michael Holman, Ekaterina Dimova, Milena Savova)(Naouka i Izkoustvo, Sofia, 1989)
+Английски правопис и изговор на имената в българския език (Андрей Йорданов Данчев, Майкъл Холман, Екатерина Стефанова Димова, Милена Веселинова Савова)
+
+Fuzzy search
+Fuzzy search algorithm
+String matching algorithm
+
+Compound names
+Bulgarian Full Name Transliterator
+
+

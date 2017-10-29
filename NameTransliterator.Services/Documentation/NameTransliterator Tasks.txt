@@ -1,0 +1,63 @@
+NameTransliterator Tasks:
+
+1. Regular expressions:
+ei
+ey
+
+at the end of name
+
+Examples: Sergei, Sergey
+
+2. Remove redundant dashes
+
+3. Replace "- " with "-"
+
+4. Replace " - " with "-"
+
+5. Replace " -" with "-"
+
+6. Replace character repeating more than 2 times with single character
+
+6. Make sure the input string consists only of characters from the selected input language
+
+7. Refactor code - search for predefined name in dictionary data structure or search in database (NameTransliterator)
+
+8. Users should be able to create, edit and delete Transliteration models
+
+Tables:
+
+TransliterationModels
+
+Languages
+
+LanguageSets
+
+Names
+
+Columns:
+Id
+SourceName
+SourceLanguageId
+TargetName
+TargetLanguageId
+
+NameTypes
+
+=============================================
+
+Audits
+
+Columns:
+
+TableName
+
+ColumnName
+
+StartValue
+
+FinalValue
+
+Action (INSERT, UPDATE, DELETE)
+
+
+
