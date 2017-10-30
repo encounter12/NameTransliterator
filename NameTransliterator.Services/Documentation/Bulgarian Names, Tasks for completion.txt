@@ -1,7 +1,9 @@
 Bulgarian names variations in English (use for tests):
 
-Евгений / Евгени - Evgenii, Evgeniy, Evgenyi, Evgeni
+Евгений / Евгени - Evgenii, Evgeniy, Evgenyi, Evgeni - Evgeniy Stamboliyski, Evgenii Stamboliyski, Evgenii Stamboliiski
 Лъчезар - Lachezar, Luchezar
+Лъчезар - la4ezar
+Лъчо - Lacho, Lucho
 Дончо Дудев - Doncho Doudev, Doncho Dudev
 Кънчев - Kanchev, Kunchev
 Кунчев - Kunchev, Kounchev
@@ -9,17 +11,29 @@ Bulgarian names variations in English (use for tests):
 Кънев - Kanev, Kunev
 Стилян - Stilyan, Stilian
 Мутафчийски - Mutafchiyski, Mutafchiiski, Mutafchiisky
+Андрей Мутафчийски - Andrey Mutafchiyski, Andrei Mutafchiiski, Andrei Mutafchiisky
 Гюзелев - Gyuzelev
+Пенчо Славейков - Pencho Slaveykov, Pencho Slaveikov
 Борис Солтарийски - Boris Soltariyski, Borys Soltariiski 
-Yordan Karagyozov
-Iordan Karagyozov
-Дянков - Dyankov, Diankov
-Силвия - Silvia
+Йордан Карагьозов - Yordan Karagyozov, Iordan Karagyozov
+Ваньо Димитров-Янкулов - Vanyo Dimitrov-Yankulov, Vanio Dimitrov-Iankulov
+Мария Янчева - Maria Yancheva, Maria Iancheva
+Мариана Янчева - Mariana Yancheva, Mariana Iancheva
+Vanyo Vanyo
+Vanio Vanio
 Мария - Maria
+Maria Maria
+Iooooooannnnnnnna Diimitrooovvaaaa    @#$@#$@#$@#$234234
+Maria Maria-Iankulova
+Дянков - Dyankov, Diankov
+Янчо Дянков - Yancho Dyankov, Iancho Diankov
+Силвия - Silvia
+Силвия Янкулова - Silvia Yankulova, Silvia Iankulova
+Силвия Димитрова-Янкулова - Silvia Dimitrova-Yankulova, Silvia Dimitrova    -Yankulova
 Ния - Nia
 Иван - Ivan, Yvan
 Йордан - Yordan, Iordan, Jordan
-Йордан Йовков - Yordan Yovkov
+Йордан Йовков - Yordan Yovkov, Iordan Iovkov, Jordan Jovkov
 Йорданка Фандъкова - Yordanka Fandakova, Yordanka Fandukova
 Стоян Стоянов - Stoyan Stoyanov
 Стоян Стоянов - Stoian Stoianov
@@ -51,6 +65,7 @@ Iordan Karagyozov
 Maria
 Petya Yancheva
 Petia Iancheva
+Мария Даракчиева - Maria Darakchieva
 Таню Нейков - Tanyu Neykov
 Таньо Нейков - Tanyo Neykov, Tanio Neikov
 Надежда Славкова - Nadezhda Slavkova, Nadejda Slavkova
@@ -111,6 +126,8 @@ All characters excluding "e" and "n" repeating more than once should be reduced 
 Sources:
 
 Bulgarian actors (Golden collection DVDs - 'Trud' newspaper)
+Bugarian writers
+Bulgarian revolutionaries
 Bulgarian musicians
 Bulgarian scientists
 Bulgarian sports men/women
