@@ -27,7 +27,7 @@
                 Environment.Exit(1);
             }
 
-            var sourceLanguages = languageSets.Select(ls => ls.SourceLanguage).ToList();
+            var sourceLanguages = languageSets.OrderBy(ls => ls.SourceLanguage.Id).Select(ls => ls.SourceLanguage).ToList();
 
             int selectedSourceLanguageId = GetLanguageIdFromUser(sourceLanguages, LanguageType.Source);
 
@@ -95,7 +95,7 @@
 
         public static void DisplayMenu(List<Language> languages, LanguageType languageType)
         {
-            Console.WriteLine("Select {0} language:", languageType.ToString().ToLower());
+            Console.WriteLine("Select {0} language (choose language number):", languageType.ToString().ToLower());
 
             Console.WriteLine();
 
@@ -162,16 +162,14 @@
         {
             if (sourceLanguageName.ToLower() == "english")
             {
-                string transliteratedNameFromDict;
+                bool nameExistInDictionary = NameTransliteratorCollections
+                    .LatinCyrillicNamesDictionary
+                    .TryGetValue(nameForTransliteration, out string transliteratedNameFromDict);
 
-                //bool nameExistInDictionary = NameTransliteratorCollections
-                //    .LatinCyrillicNamesDictionary
-                //    .TryGetValue(nameForTransliteration, out transliteratedNameFromDict);
-
-                //if (nameExistInDictionary)
-                //{
-                //    return transliteratedNameFromDict.CapitalizeEachWord();
-                //}
+                if (nameExistInDictionary)
+                {
+                    return transliteratedNameFromDict.CapitalizeEachWord();
+                }
             }
 
             var transliterationModels = new List<NameTransliterationModel>();

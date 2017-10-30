@@ -1,13 +1,13 @@
 ﻿namespace NameTransliterator.Services
 {
     using System;
-    using System.Text.RegularExpressions;
-    using System.Linq;
-
-    using Models;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
+    using System.Text.RegularExpressions;
+
+    using Models;
 
     public class NameTransliterator
     {
@@ -26,15 +26,10 @@
             string transliteratedName = String.Copy(nameForTransliteration)
                 .Trim().ConvertMultipleWhitespacesToSingleSpaces().ToLower();
 
-            foreach (var item in transliterationModel.TransliterationRegexDictionary)
+            foreach (var item in transliterationModel.TransliterationRules)
             {
-                string pattern = item.Key;
-                transliteratedName = Regex.Replace(transliteratedName, pattern, item.Value, RegexOptions.IgnoreCase);
-            }
-
-            foreach (var item in transliterationModel.TransliterationDictionary)
-            {
-                transliteratedName = transliteratedName.Replace(item.Key, item.Value);
+                string pattern = item.SourceExpression;
+                transliteratedName = Regex.Replace(transliteratedName, pattern, item.TargetExpression, RegexOptions.IgnoreCase);
             }
 
             transliteratedName = transliteratedName.CapitalizeEachWord();
@@ -61,6 +56,16 @@
         }
 
         public List<NameTransliterationModel> LoadTransliterationModels()
+        {
+            var transliterationModels = new List<NameTransliterationModel>();
+  
+            // transliterationModels = this.LoadTransliterationModelsFromTextFiles();
+            transliterationModels = TransliterationModels.GetTransliterationModels();
+
+            return transliterationModels;
+        }
+
+        public List<NameTransliterationModel> LoadTransliterationModelsFromTextFiles()
         {
             var relativeFilePath = "TransliterationSetTextFiles";
 
@@ -96,25 +101,7 @@
                 fileCounter++;
             }
 
-            var comparer = new LengthComparer();
-
             return transliterationModels;
-        }
-
-        public NameTransliterationModel GetReversedTransliterationModel(NameTransliterationModel model, IComparer<string> comparer)
-        {
-            var reversedModel = new NameTransliterationModel()
-            {
-                TransliterationDictionary = model.TransliterationDictionary.SwapDictionaryKeysWithValues(comparer),
-                TransliterationRegexDictionary = new SortedDictionary<string, string>(comparer),
-                LanguageSet = new LanguageSet()
-                {
-                    SourceLanguage = model.LanguageSet.TargetLanguage,
-                    TargetLanguage = model.LanguageSet.SourceLanguage
-                }
-            };
-
-            return reversedModel;
         }
     }
 }

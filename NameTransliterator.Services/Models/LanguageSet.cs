@@ -11,7 +11,5 @@
         public int TargetLanguageId { get; set; }
 
         public virtual Language TargetLanguage { get; set; }
-
-        public bool AutomaticallyGenerated { get; set; }
     }
 }

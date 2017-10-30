@@ -6,16 +6,12 @@
     {
         public NameTransliterationModel()
         {
-            IComparer<string> lengthComparer = new LengthComparer();
+            IComparer<TransliterationRule> longestSourceExpressionComparer = new LongestSourceExpressionComparer();
 
-            this.TransliterationDictionary = new SortedDictionary<string, string>(lengthComparer);
-
-            this.TransliterationRegexDictionary = new SortedDictionary<string, string>(lengthComparer);
+            this.TransliterationRules = new List<TransliterationRule>();
         }
 
-        public SortedDictionary<string, string> TransliterationDictionary { get; set; }
-
-        public SortedDictionary<string, string> TransliterationRegexDictionary { get; set; }
+        public IList<TransliterationRule> TransliterationRules { get; set; }
 
         public int LanguageSetId { get; set; }
 

@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <Content Include="TransliterationSetTextFiles\Bulgarian-English.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="TransliterationSetTextFiles\English-Bulgarian.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
