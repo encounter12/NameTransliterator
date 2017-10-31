@@ -1,7 +1,8 @@
-﻿namespace NameTransliterator.Services
+﻿using NameTransliterator.Models.DomainModels;
+
+namespace NameTransliterator.Services
 {
     using System.Collections.Generic;
-    using Models;
 
     public static class TestData
     {

@@ -1,0 +1,10 @@
+Database Schema
+
+TransliterationRules - Id, SourceExpression, TargetExpression, ExecutionOrder, TransliterationModelId
+Languages - Id, Name
+LanguagePairs - Id, SourceLanguageId (FK), TargetLanguageId (FK)
+TransliterationType - Id, Name (Official, Custom, etc)
+TransliterationModels - Id, LanguagePairId, TransliterationTypeId
+SourceNames - Id, SourceName, TargetNameId (FK)
+TargetNames - Id, TargetName, AuthorId, TransliterationModelId
+Authors - Id, Name, Description

@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NameTransliterator.Models\NameTransliterator.Models.csproj" />
     <ProjectReference Include="..\NameTransliterator.Services\NameTransliterator.Services.csproj" />
   </ItemGroup>
 

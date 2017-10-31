@@ -1,22 +1,24 @@
-﻿namespace NameTransliterator.Services.Models
+﻿using NameTransliterator.Models.DomainModels;
+
+namespace NameTransliterator.Services.Models
 {
     using System.Collections.Generic;
     using System.Linq;
 
-    public static class TransliterationModels
+    public static class TransliterationModelsData
     {
-        public static List<NameTransliterationModel> GetTransliterationModels()
+        public static List<TransliterationModel> GetTransliterationModels()
         {
-            var transliterationModels = new List<NameTransliterationModel>();
+            var transliterationModels = new List<TransliterationModel>();
 
-            var firstTransliterationModel = new NameTransliterationModel();
+            var firstTransliterationModel = new TransliterationModel();
 
             Language sourceLanguage = TestData.Languages.FirstOrDefault(l => l.Name == "English");
             Language targetLanguage = TestData.Languages.FirstOrDefault(l => l.Name == "Bulgarian");
 
             if (sourceLanguage != null && targetLanguage != null)
             {
-                firstTransliterationModel.LanguageSet = new LanguageSet()
+                firstTransliterationModel.LanguagePair = new LanguagePair()
                 {
                     Id = 1,
                     SourceLanguage = sourceLanguage,
@@ -28,14 +30,14 @@
 
             transliterationModels.Add(firstTransliterationModel);
 
-            var secondTransliterationModel = new NameTransliterationModel();
+            var secondTransliterationModel = new TransliterationModel();
 
             sourceLanguage = TestData.Languages.FirstOrDefault(l => l.Name == "Bulgarian");
             targetLanguage = TestData.Languages.FirstOrDefault(l => l.Name == "English");
 
             if (sourceLanguage != null && targetLanguage != null)
             {
-                secondTransliterationModel.LanguageSet = new LanguageSet()
+                secondTransliterationModel.LanguagePair = new LanguagePair()
                 {
                     Id = 2,
                     SourceLanguage = sourceLanguage,

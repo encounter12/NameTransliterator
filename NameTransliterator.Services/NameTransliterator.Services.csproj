@@ -24,4 +24,8 @@
     <Folder Include="Documentation\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\NameTransliterator.Models\NameTransliterator.Models.csproj" />
+  </ItemGroup>
+
 </Project>

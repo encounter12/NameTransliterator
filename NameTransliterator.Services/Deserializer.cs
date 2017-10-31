@@ -1,17 +1,17 @@
-﻿namespace NameTransliterator.Services
+﻿using NameTransliterator.Models.DomainModels;
+
+namespace NameTransliterator.Services
 {
     using System;
     using System.IO;
     using System.Linq;
     using System.Text.RegularExpressions;
 
-    using Models;
-
     public class Deserializer
     {
-        public NameTransliterationModel Deserialize(string filePath, int languageSetId)
+        public TransliterationModel Deserialize(string filePath, int languagePairId)
         {
-            var transliterationModel = new NameTransliterationModel();
+            var transliterationModel = new TransliterationModel();
 
             using (StreamReader reader = File.OpenText(filePath))
             {
@@ -21,7 +21,7 @@
 
                 int lineCounter = 1;
 
-                bool isLanguageSetSpecified = false;
+                bool isLanguagePairSpecified = false;
 
                 while ((currentLine = reader.ReadLine()) != null)
                 {
@@ -32,15 +32,15 @@
 
                     if (lineCounter == 1)
                     {
-                        string[] languageSetArray = 
+                        string[] languagePairArray = 
                             currentLine.Split(new string[] { " : ", ":", ": ", " :" }, StringSplitOptions.RemoveEmptyEntries);
 
-                        languageSetArray = languageSetArray.Select(s => s.Trim(new char[] { '"' }).Trim()).ToArray();
+                        languagePairArray = languagePairArray.Select(s => s.Trim(new char[] { '"' }).Trim()).ToArray();
 
-                        if (languageSetArray != null && languageSetArray.Length == 2)
+                        if (languagePairArray != null && languagePairArray.Length == 2)
                         {
-                            string modelSourceLanguage = languageSetArray[0].CapitalizeStringFirstChar();
-                            string modelTargetLanguage = languageSetArray[1].CapitalizeStringFirstChar();
+                            string modelSourceLanguage = languagePairArray[0].CapitalizeStringFirstChar();
+                            string modelTargetLanguage = languagePairArray[1].CapitalizeStringFirstChar();
 
                             Language sourceLanguage = TestData.Languages.FirstOrDefault(l => l.Name == modelSourceLanguage);
 
@@ -50,21 +50,21 @@
                             //TODO: Set markup specifying the language set line (e.g. <Bulgarian - English>)
                             if (sourceLanguage != null && targetLanguage != null)
                             {
-                                transliterationModel.LanguageSet = new LanguageSet()
+                                transliterationModel.LanguagePair = new LanguagePair()
                                 {
-                                    Id = languageSetId,
+                                    Id = languagePairId,
                                     SourceLanguage = sourceLanguage,
                                     TargetLanguage = targetLanguage
                                 };
 
-                                isLanguageSetSpecified = true;
+                                isLanguagePairSpecified = true;
                             }
                         }
-                        else if (languageSetArray == null)
+                        else if (languagePairArray == null)
                         {
                             throw new ArgumentException("The language sets array is null");
                         }
-                        else if (languageSetArray.Length != 2)
+                        else if (languagePairArray.Length != 2)
                         {
                             throw new ArgumentException(
                                 string.Format("The language sets array on line {0} should contain 2 elements", lineCounter));
@@ -111,7 +111,7 @@
                     lineCounter++;
                 }
 
-                if (!isLanguageSetSpecified)
+                if (!isLanguagePairSpecified)
                 {
                     throw new ArgumentNullException("The language set is not specified");
                 }

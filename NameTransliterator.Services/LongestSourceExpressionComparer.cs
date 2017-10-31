@@ -1,6 +1,7 @@
-﻿namespace NameTransliterator.Services
+﻿using NameTransliterator.Models.DomainModels;
+
+namespace NameTransliterator.Services
 {
-    using global::NameTransliterator.Services.Models;
     using System.Collections.Generic;
 
     public class LongestSourceExpressionComparer : IComparer<TransliterationRule>

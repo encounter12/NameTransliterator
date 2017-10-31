@@ -1,6 +1,6 @@
-﻿namespace NameTransliterator.Services.Models
+﻿namespace NameTransliterator.Models.DomainModels
 {
-    public class LanguageSet
+    public class LanguagePair
     {
         public int Id { get; set; }
 

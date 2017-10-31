@@ -1,5 +1,8 @@
-﻿namespace NameTransliterator.Services
+﻿using NameTransliterator.Models.DomainModels;
+
+namespace NameTransliterator.Services
 {
+    using Models;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -7,11 +10,9 @@
     using System.Reflection;
     using System.Text.RegularExpressions;
 
-    using Models;
-
     public class NameTransliterator
     {
-        public string TransliterateName(NameTransliterationModel transliterationModel, string nameForTransliteration)
+        public string TransliterateName(TransliterationModel transliterationModel, string nameForTransliteration)
         {
             if (transliterationModel == null)
             {
@@ -37,13 +38,13 @@
             return transliteratedName;
         }
 
-        public List<LanguageSet> GetLanguageSets(List<NameTransliterationModel> transliterationModels)
+        public List<LanguagePair> GetLanguagePairs(List<TransliterationModel> transliterationModels)
         {
-            var languageSets = new List<LanguageSet>();
+            var languagePairs = new List<LanguagePair>();
 
-            languageSets = transliterationModels.Select(tm => tm.LanguageSet).ToList();
+            languagePairs = transliterationModels.Select(tm => tm.LanguagePair).ToList();
 
-            return languageSets;
+            return languagePairs;
         }
 
         public string TransliterateName(IDictionary<string, string> namesDictionary, string nameForTransliteration)
@@ -55,17 +56,17 @@
             return transliteratedName;
         }
 
-        public List<NameTransliterationModel> LoadTransliterationModels()
+        public List<TransliterationModel> LoadTransliterationModels()
         {
-            var transliterationModels = new List<NameTransliterationModel>();
+            var transliterationModels = new List<TransliterationModel>();
   
             // transliterationModels = this.LoadTransliterationModelsFromTextFiles();
-            transliterationModels = TransliterationModels.GetTransliterationModels();
+            transliterationModels = TransliterationModelsData.GetTransliterationModels();
 
             return transliterationModels;
         }
 
-        public List<NameTransliterationModel> LoadTransliterationModelsFromTextFiles()
+        public List<TransliterationModel> LoadTransliterationModelsFromTextFiles()
         {
             var relativeFilePath = "TransliterationSetTextFiles";
 
@@ -79,7 +80,7 @@
 
             var deserializer = new Deserializer();
 
-            var transliterationModels = new List<NameTransliterationModel>();
+            var transliterationModels = new List<TransliterationModel>();
 
             int fileCounter = 1;
 
@@ -87,7 +88,7 @@
             {
                 try
                 {
-                    var transliterationModel = new NameTransliterationModel();
+                    var transliterationModel = new TransliterationModel();
 
                     transliterationModel = deserializer.Deserialize(file, fileCounter);
 

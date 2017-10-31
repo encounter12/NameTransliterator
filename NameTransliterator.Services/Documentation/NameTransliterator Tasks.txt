@@ -30,7 +30,7 @@ TransliterationModels
 
 Languages
 
-LanguageSets
+LanguagePairs
 
 Names
 

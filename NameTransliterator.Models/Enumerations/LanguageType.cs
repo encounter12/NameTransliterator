@@ -1,4 +1,4 @@
-﻿namespace NameTransliterator.Services.Models
+﻿namespace NameTransliterator.Models.Enumerations
 {
     public enum LanguageType
     {

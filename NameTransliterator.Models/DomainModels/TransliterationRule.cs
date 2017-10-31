@@ -1,4 +1,4 @@
-﻿namespace NameTransliterator.Services.Models
+﻿namespace NameTransliterator.Models.DomainModels
 {
     using System;
 
@@ -22,6 +22,10 @@
         public string TargetExpression { get; set; }
 
         public int ExecutionOrder { get; set; }
+
+        public int TransliterationModelId { get; set; }
+
+        public virtual TransliterationModel TransliterationModel { get; set; }
 
         public int CompareTo(TransliterationRule otherRule)
         {
