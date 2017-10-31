@@ -5,5 +5,29 @@
     <RuntimeFrameworkVersion>2.1.0-preview2-25624-02</RuntimeFrameworkVersion>
     <NETStandardImplicitPackageVersion>2.1.0-preview2-25624-02</NETStandardImplicitPackageVersion>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>NameTransliterator.Data</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>NameTransliterator.Data</PackageId>
+    <RuntimeFrameworkVersion>2.1.0-preview2-25624-02</RuntimeFrameworkVersion>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-preview1-27468" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.0-preview1-27468" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NameTransliterator.Models\NameTransliterator.Models.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.1.0-preview1-27468" />
+  </ItemGroup>
 
 </Project>
