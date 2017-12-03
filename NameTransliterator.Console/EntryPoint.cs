@@ -7,6 +7,7 @@
     using NameTransliterator.Services;
     using NameTransliterator.Models.DomainModels;
     using NameTransliterator.Models.Enumerations;
+    using NameTransliterator.Models.ViewModels;
 
     public class EntryPoint
     {
@@ -16,11 +17,13 @@
         {
             var validators = new Validators();
 
-            var languagePairs = new List<LanguagePair>();
+            var sourceLanguages = new List<SourceLanguageViewModel>();
+
+            var targetLanguages = new List<TargetLanguageViewModel>();
 
             try
             {
-                languagePairs = GetLanguagePairs();
+                sourceLanguages = GetSourceLanguages();
             }
             catch (Exception ex)
             {
@@ -28,44 +31,63 @@
                 Environment.Exit(1);
             }
 
-            var sourceLanguages = languagePairs.OrderBy(ls => ls.SourceLanguage.Id).Select(ls => ls.SourceLanguage).ToList();
+            try
+            {
+                targetLanguages = GetTargetLanguages();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Environment.Exit(1);
+            }
 
-            int selectedSourceLanguageId = GetLanguageIdFromUser(sourceLanguages, LanguageType.Source);
+            List<ILanguageViewModel> sourceLanguagesBase = sourceLanguages.ToList<ILanguageViewModel>();
+
+            int selectedSourceLanguageId = GetLanguageIdFromUser(sourceLanguagesBase, LanguageType.Source);
+
+            SourceLanguageViewModel selectedSourceLanguage = sourceLanguages.FirstOrDefault(sl => sl.Id == selectedSourceLanguageId);
+
+            if (selectedSourceLanguage == null)
+            {
+                Console.WriteLine(string.Format("There is no source language with id: {0}", selectedSourceLanguageId));
+                Environment.Exit(1);
+            }
 
             Console.WriteLine();
 
-            var targetLanguages = languagePairs
-                .Where(ls => ls.SourceLanguage.Id == selectedSourceLanguageId)
-                .Select(ls => ls.TargetLanguage)
+            targetLanguages = targetLanguages
+                .Where(tl => selectedSourceLanguage.TargetLanguageIds.Contains(tl.Id))
                 .ToList();
 
-            int targetLanguageId = GetLanguageIdFromUser(targetLanguages, LanguageType.Target);
+            List<ILanguageViewModel> targetLanguagesBase = targetLanguages.ToList<ILanguageViewModel>();
+
+            int selectedTargetLanguageId = GetLanguageIdFromUser(targetLanguagesBase, LanguageType.Target);
+
+            TargetLanguageViewModel selectedTargetLanguage = targetLanguages.FirstOrDefault(tl => tl.Id == selectedTargetLanguageId);
+
+            if (selectedTargetLanguage == null)
+            {
+                Console.WriteLine(string.Format("There is no target language with id: {0}", selectedSourceLanguageId));
+                Environment.Exit(1);
+            }
 
             //TODO: Create UserTransliterationInputModel and use data annotations and self-validating models (implement IValidatableObject), 
             // see: https://stackoverflow.com/a/3783328, and https://stackoverflow.com/a/29327343
 
             Console.WriteLine();
 
-            var selectedLanguagePair = languagePairs.FirstOrDefault(ls => ls.SourceLanguage.Id == selectedSourceLanguageId);
-
-            if (selectedLanguagePair == null)
-            {
-                Console.WriteLine("The language set does not exist");
-                Environment.Exit(1);
-            }
-
             string nameForTransliteration = GetTransliterationNameFromUser(validators);
 
             var transliteratedName = 
-                GetTransliteratedName(nameForTransliteration, selectedLanguagePair.Id, selectedLanguagePair.SourceLanguage.Name);
+                GetTransliteratedName(nameForTransliteration, selectedSourceLanguageId, selectedTargetLanguageId, selectedSourceLanguage.Name);
 
             Console.WriteLine(
                 "Name transliterated ({0} - {1}): {2}",
-                selectedLanguagePair.SourceLanguage.Name,
-                selectedLanguagePair.TargetLanguage.Name, transliteratedName);
+                selectedSourceLanguage.Name,
+                selectedTargetLanguage.Name, transliteratedName);
         }
 
-        public static int GetLanguageIdFromUser(List<Language> sourceLanguages, LanguageType languageType)
+        public static int GetLanguageIdFromUser(List<ILanguageViewModel> languages, LanguageType languageType)
         {
             bool selectedLanguageValid = false;
 
@@ -73,7 +95,7 @@
 
             do
             {
-                DisplayMenu(sourceLanguages, languageType);
+                DisplayMenu(languages, languageType);
 
                 try
                 {
@@ -94,7 +116,7 @@
             return selectedLanguageId;
         }
 
-        public static void DisplayMenu(List<Language> languages, LanguageType languageType)
+        public static void DisplayMenu(List<ILanguageViewModel> languages, LanguageType languageType)
         {
             Console.WriteLine("Select {0} language (choose language number):", languageType.ToString().ToLower());
 
@@ -138,7 +160,7 @@
             return nameForTransliteration;
         }
 
-        public static List<LanguagePair> GetLanguagePairs()
+        public static List<SourceLanguageViewModel> GetSourceLanguages()
         {
             var nameTransliterator = new NameTransliterator();
 
@@ -151,14 +173,33 @@
                 throw new Exception(ex.Message);
             }
 
-            List<LanguagePair> languagePairs = nameTransliterator.GetLanguagePairs(cachedTransliterationModels);
+            List<SourceLanguageViewModel> sourceLanguages = nameTransliterator.GetSourceLanguages(cachedTransliterationModels);
 
-            return languagePairs;
+            return sourceLanguages;
+        }
+
+        public static List<TargetLanguageViewModel> GetTargetLanguages()
+        {
+            var nameTransliterator = new NameTransliterator();
+
+            try
+            {
+                cachedTransliterationModels = nameTransliterator.LoadTransliterationModels();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            List<TargetLanguageViewModel> targetLanguages = nameTransliterator.GetTargetLanguages(cachedTransliterationModels);
+
+            return targetLanguages;
         }
 
         public static string GetTransliteratedName(
             string nameForTransliteration, 
-            int selectedLanguagePairId, 
+            int sourceLanguageId,
+            int targetLanguageId,
             string sourceLanguageName)
         {
             if (sourceLanguageName.ToLower() == "english")
@@ -190,7 +231,11 @@
             }
 
             var searchedTransliterationModel = cachedTransliterationModels
-                .FirstOrDefault(tm => tm.LanguagePair.Id == selectedLanguagePairId);
+                .FirstOrDefault(
+                    tm => 
+                        tm.SourceLanguageId == sourceLanguageId && 
+                        tm.TargetLanguageId == targetLanguageId && 
+                        !tm.IsDeleted);
 
             if (searchedTransliterationModel == null)
             {

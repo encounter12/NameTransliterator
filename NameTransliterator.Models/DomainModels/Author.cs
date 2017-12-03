@@ -1,6 +1,8 @@
 ﻿namespace NameTransliterator.Models.DomainModels
 {
-    public class Author
+    using NameTransliterator.Models.SystemModels;
+
+    public class Author : AuditableEntity
     {
         public int Id { get; set; }
 

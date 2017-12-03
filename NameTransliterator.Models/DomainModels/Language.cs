@@ -1,6 +1,8 @@
 ﻿namespace NameTransliterator.Models.DomainModels
 {
-    public class Language
+    using NameTransliterator.Models.SystemModels;
+
+    public class Language : AuditableEntity
     {
         public int Id { get; set; }
 

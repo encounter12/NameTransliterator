@@ -18,15 +18,13 @@
 
         public DbSet<Language> Languages { get; set; }
 
-        public DbSet<LanguagePair> LanguagePairs { get; set; }
-
-        public DbSet<SourceName> SourceNames { get; set; }
-
-        public DbSet<TargetName> TargetNames { get; set; }
+        public DbSet<Name> Names { get; set; }
 
         public DbSet<TransliterationModel> TransliterationModels { get; set; }
 
         public DbSet<TransliterationRule> TransliterationRules { get; set; }
+
+        public DbSet<TransliterationDictionary> TransliterationDictionaries { get; set; }
 
         public DbSet<TransliterationType> TransliterationTypes { get; set; }
 

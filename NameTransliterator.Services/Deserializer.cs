@@ -50,12 +50,11 @@ namespace NameTransliterator.Services
                             //TODO: Set markup specifying the language set line (e.g. <Bulgarian - English>)
                             if (sourceLanguage != null && targetLanguage != null)
                             {
-                                transliterationModel.LanguagePair = new LanguagePair()
-                                {
-                                    Id = languagePairId,
-                                    SourceLanguage = sourceLanguage,
-                                    TargetLanguage = targetLanguage
-                                };
+                                transliterationModel.SourceLanguage = sourceLanguage;
+                                transliterationModel.SourceLanguageId = sourceLanguage.Id;
+
+                                transliterationModel.TargetLanguage = targetLanguage;
+                                transliterationModel.TargetLanguageId = targetLanguage.Id;
 
                                 isLanguagePairSpecified = true;
                             }

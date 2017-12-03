@@ -1,8 +1,14 @@
 ﻿namespace NameTransliterator.Models.DomainModels
 {
+    using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations.Schema;
 
-    public class TransliterationModel
+    using NameTransliterator.Models.SystemModels;
+    using NameTransliterator.Models.IdentityModels;
+    using System.ComponentModel.DataAnnotations;
+
+    public class TransliterationModel : AuditableEntity
     {
         private ICollection<TransliterationRule> transliterationRules;
 
@@ -19,12 +25,33 @@
             set { this.transliterationRules = value; }
         }
 
-        public int LanguagePairId { get; set; }
+        [ForeignKey("Language")]
+        public int SourceLanguageId { get; set; }
 
-        public virtual LanguagePair LanguagePair { get; set; }
+        public virtual Language SourceLanguage { get; set; }
+
+        [ForeignKey("Language")]
+        public int? TargetLanguageId { get; set; }
+
+        public virtual Language TargetLanguage { get; set; }
+
+        public DateTime ValidFrom { get; set; }
+
+        public DateTime ValidTo { get; set; }
 
         public int TransliterationTypeId { get; set; }
 
         public virtual TransliterationType TransliterationType { get; set; }
+
+        public int AuthorId { get; set; }
+
+        public virtual Author Author { get; set; }
+
+        public bool IsOfficial { get; set; }
+
+        public bool IsActive { get; set; }
+
+        [Required]
+        public virtual ApplicationUser ApplicationUser { get; set; }
     }
 }

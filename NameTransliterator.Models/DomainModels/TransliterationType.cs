@@ -1,6 +1,8 @@
 ﻿namespace NameTransliterator.Models.DomainModels
 {
-    public class TransliterationType
+    using NameTransliterator.Models.SystemModels;
+
+    public class TransliterationType : AuditableEntity
     {
         public int Id { get; set; }
 

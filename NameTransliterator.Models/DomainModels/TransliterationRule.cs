@@ -1,8 +1,9 @@
 ﻿namespace NameTransliterator.Models.DomainModels
 {
     using System;
+    using NameTransliterator.Models.SystemModels;
 
-    public class TransliterationRule : IComparable<TransliterationRule>
+    public class TransliterationRule : AuditableEntity, IComparable<TransliterationRule>
     {
         public TransliterationRule()
         {

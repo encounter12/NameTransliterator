@@ -1,15 +1,16 @@
-﻿using NameTransliterator.Models.DomainModels;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
+
+using NameTransliterator.Models.DomainModels;
+using NameTransliterator.Models.ViewModels;
+using NameTransliterator.Services.Models;
 
 namespace NameTransliterator.Services
 {
-    using Models;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Reflection;
-    using System.Text.RegularExpressions;
-
     public class NameTransliterator
     {
         public string TransliterateName(TransliterationModel transliterationModel, string nameForTransliteration)
@@ -38,13 +39,36 @@ namespace NameTransliterator.Services
             return transliteratedName;
         }
 
-        public List<LanguagePair> GetLanguagePairs(List<TransliterationModel> transliterationModels)
+        public List<SourceLanguageViewModel> GetSourceLanguages(List<TransliterationModel> transliterationModels)
         {
-            var languagePairs = new List<LanguagePair>();
+            var sourceLanguages = new List<SourceLanguageViewModel>();
 
-            languagePairs = transliterationModels.Select(tm => tm.LanguagePair).ToList();
+            sourceLanguages = transliterationModels
+                .GroupBy(tm => tm.SourceLanguageId)
+                .Select(group => new SourceLanguageViewModel
+                {
+                    Id = group.Key,
+                    Name = group.Select(g => g.SourceLanguage.Name).First(),
+                    TargetLanguageIds = group.Select(g => g.TargetLanguageId).ToList()
+                })
+                .OrderBy(tm => tm.Name)
+                .ToList();
 
-            return languagePairs;
+            return sourceLanguages;
+        }
+
+        public List<TargetLanguageViewModel> GetTargetLanguages(List<TransliterationModel> transliterationModels)
+        {
+            var targetLanguages = new List<TargetLanguageViewModel>();
+
+            targetLanguages = transliterationModels.Select(tm => new TargetLanguageViewModel
+            {
+                Id = tm.TargetLanguageId,
+                Name = tm.TargetLanguage.Name
+            })
+            .ToList();
+
+            return targetLanguages;
         }
 
         public string TransliterateName(IDictionary<string, string> namesDictionary, string nameForTransliteration)

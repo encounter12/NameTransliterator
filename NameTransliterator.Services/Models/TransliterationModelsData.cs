@@ -11,41 +11,43 @@ namespace NameTransliterator.Services.Models
         {
             var transliterationModels = new List<TransliterationModel>();
 
-            var firstTransliterationModel = new TransliterationModel();
-
             Language sourceLanguage = TestData.Languages.FirstOrDefault(l => l.Name == "English");
             Language targetLanguage = TestData.Languages.FirstOrDefault(l => l.Name == "Bulgarian");
 
+            var firstTransliterationModel = new TransliterationModel();
+
             if (sourceLanguage != null && targetLanguage != null)
             {
-                firstTransliterationModel.LanguagePair = new LanguagePair()
+                firstTransliterationModel = new TransliterationModel()
                 {
                     Id = 1,
+                    SourceLanguageId = sourceLanguage.Id,
                     SourceLanguage = sourceLanguage,
-                    TargetLanguage = targetLanguage
+                    TargetLanguageId = targetLanguage.Id,
+                    TargetLanguage = targetLanguage,
+                    TransliterationRules = EnglishBulgarianTransliterationSet
                 };
             }
 
-            firstTransliterationModel.TransliterationRules = EnglishBulgarianTransliterationSet;
-
             transliterationModels.Add(firstTransliterationModel);
-
-            var secondTransliterationModel = new TransliterationModel();
 
             sourceLanguage = TestData.Languages.FirstOrDefault(l => l.Name == "Bulgarian");
             targetLanguage = TestData.Languages.FirstOrDefault(l => l.Name == "English");
 
+            var secondTransliterationModel = new TransliterationModel();
+
             if (sourceLanguage != null && targetLanguage != null)
             {
-                secondTransliterationModel.LanguagePair = new LanguagePair()
+                secondTransliterationModel = new TransliterationModel()
                 {
                     Id = 2,
+                    SourceLanguageId = sourceLanguage.Id,
                     SourceLanguage = sourceLanguage,
-                    TargetLanguage = targetLanguage
+                    TargetLanguageId = targetLanguage.Id,
+                    TargetLanguage = targetLanguage,
+                    TransliterationRules = BulgarianEnglishTransliterationSet
                 };
             }
-
-            secondTransliterationModel.TransliterationRules = BulgarianEnglishTransliterationSet;
 
             transliterationModels.Add(secondTransliterationModel);
 
