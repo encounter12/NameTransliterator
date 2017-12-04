@@ -3,11 +3,11 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <!-- <RuntimeFrameworkVersion>2.1.0-preview1-25719-04</RuntimeFrameworkVersion> -->
-    <!-- <NETStandardImplicitPackageVersion>2.1.0-preview1-25719-04</NETStandardImplicitPackageVersion> -->
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NameTransliterator.Data\NameTransliterator.Data.csproj" />
+    <ProjectReference Include="..\NameTransliterator.DI\NameTransliterator.DI.csproj" />
     <ProjectReference Include="..\NameTransliterator.Models\NameTransliterator.Models.csproj" />
     <ProjectReference Include="..\NameTransliterator.Services\NameTransliterator.Services.csproj" />
   </ItemGroup>

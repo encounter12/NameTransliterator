@@ -3,11 +3,18 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.EntityFrameworkCore;
 
+    using NameTransliterator.Data.Context;
+    using NameTransliterator.Data.Seed;
+    using NameTransliterator.DI;
     using NameTransliterator.Services;
     using NameTransliterator.Models.DomainModels;
     using NameTransliterator.Models.Enumerations;
     using NameTransliterator.Models.ViewModels;
+    using NameTransliterator.Models.IdentityModels;
+    using Microsoft.AspNetCore.Identity;
 
     public class EntryPoint
     {
@@ -15,6 +22,39 @@
 
         public static void Main(string[] args)
         {
+            var services = new ServiceCollection();
+
+            services.AddDbContext<ApplicationDbContext>(options => 
+                options.UseSqlServer("Server=(LocalDb)\\MSSQLLocalDB;Database=NameTransliterator;Trusted_Connection=True;MultipleActiveResultSets=true"));
+
+            services.AddIdentity<ApplicationUser, IdentityRole>(
+                options =>
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequiredLength = 2;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequiredUniqueChars = 2;
+                })
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
+            services.AddDependencyInjection("BuiltInDependencyInjector");
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            serviceProvider.GetService<ApplicationDbContext>().Database.Migrate();
+
+            try
+            {
+                DatabaseInitializer.SeedData(serviceProvider).Wait();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
             var validators = new Validators();
 
             var sourceLanguages = new List<SourceLanguageViewModel>();
