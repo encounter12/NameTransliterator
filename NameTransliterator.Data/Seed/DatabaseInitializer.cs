@@ -13,16 +13,13 @@ namespace NameTransliterator.Data.Seed
     {
         public static async Task SeedData(IServiceProvider serviceProvider)
         {
-            using (var serviceScope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            var context = serviceProvider.GetService<ApplicationDbContext>();
+
+            var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
+
+            if (context.AllMigrationsApplied())
             {
-                var context = serviceProvider.GetService<ApplicationDbContext>();
-
-                var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
-
-                if (context.AllMigrationsApplied())
-                {
-                    await SeedDatabase(context, userManager);
-                }
+                await SeedDatabase(context, userManager);
             }
         }
 

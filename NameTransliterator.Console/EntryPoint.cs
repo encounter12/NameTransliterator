@@ -3,18 +3,18 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.AspNetCore.Identity;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.EntityFrameworkCore;
 
     using NameTransliterator.Data.Context;
     using NameTransliterator.Data.Seed;
     using NameTransliterator.DI;
-    using NameTransliterator.Services;
     using NameTransliterator.Models.DomainModels;
     using NameTransliterator.Models.Enumerations;
     using NameTransliterator.Models.ViewModels;
     using NameTransliterator.Models.IdentityModels;
-    using Microsoft.AspNetCore.Identity;
+    using NameTransliterator.Services;
 
     public class EntryPoint
     {
@@ -53,6 +53,7 @@
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                Environment.Exit(1);
             }
 
             var validators = new Validators();
