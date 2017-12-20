@@ -37,7 +37,7 @@
 
         public DateTime ValidFrom { get; set; }
 
-        public DateTime ValidTo { get; set; }
+        public DateTime? ValidTo { get; set; }
 
         public int TransliterationTypeId { get; set; }
 
@@ -53,5 +53,7 @@
 
         [Required]
         public virtual ApplicationUser ApplicationUser { get; set; }
+
+        public string ApplicationUserId { get; set; }
     }
 }

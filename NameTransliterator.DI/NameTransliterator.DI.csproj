@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NameTransliterator.Data\NameTransliterator.Data.csproj" />
+    <ProjectReference Include="..\NameTransliterator.Services\NameTransliterator.Services.csproj" />
   </ItemGroup>
 
 </Project>

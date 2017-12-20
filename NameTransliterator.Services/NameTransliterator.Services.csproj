@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NameTransliterator.Data\NameTransliterator.Data.csproj" />
     <ProjectReference Include="..\NameTransliterator.Models\NameTransliterator.Models.csproj" />
   </ItemGroup>
 

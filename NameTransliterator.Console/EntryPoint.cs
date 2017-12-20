@@ -10,15 +10,15 @@
     using NameTransliterator.Data.Context;
     using NameTransliterator.Data.Seed;
     using NameTransliterator.DI;
-    using NameTransliterator.Models.DomainModels;
     using NameTransliterator.Models.Enumerations;
     using NameTransliterator.Models.ViewModels;
     using NameTransliterator.Models.IdentityModels;
     using NameTransliterator.Services;
+    using NameTransliterator.Services.Abstractions;
 
     public class EntryPoint
     {
-        private static List<TransliterationModel> cachedTransliterationModels;
+        private static INameTransliterator nameTransliterator;
 
         public static void Main(string[] args)
         {
@@ -46,6 +46,8 @@
 
             serviceProvider.GetService<ApplicationDbContext>().Database.Migrate();
 
+            nameTransliterator = serviceProvider.GetService<INameTransliterator>();
+
             try
             {
                 DatabaseInitializer.SeedData(serviceProvider).Wait();
@@ -64,7 +66,7 @@
 
             try
             {
-                sourceLanguages = GetSourceLanguages();
+                sourceLanguages = nameTransliterator.GetSourceLanguages();
             }
             catch (Exception ex)
             {
@@ -74,7 +76,7 @@
 
             try
             {
-                targetLanguages = GetTargetLanguages();
+                targetLanguages = nameTransliterator.GetTargetLanguages();
             }
             catch (Exception ex)
             {
@@ -96,13 +98,13 @@
 
             Console.WriteLine();
 
-            targetLanguages = targetLanguages
+            var filteredTargetLanguages = targetLanguages
                 .Where(tl => selectedSourceLanguage.TargetLanguageIds.Contains(tl.Id))
                 .ToList();
 
-            List<ILanguageViewModel> targetLanguagesBase = targetLanguages.ToList<ILanguageViewModel>();
+            List<ILanguageViewModel> filteredTargetLanguagesBase = filteredTargetLanguages.ToList<ILanguageViewModel>();
 
-            int selectedTargetLanguageId = GetLanguageIdFromUser(targetLanguagesBase, LanguageType.Target);
+            int selectedTargetLanguageId = GetLanguageIdFromUser(filteredTargetLanguagesBase, LanguageType.Target);
 
             TargetLanguageViewModel selectedTargetLanguage = targetLanguages.FirstOrDefault(tl => tl.Id == selectedTargetLanguageId);
 
@@ -119,8 +121,11 @@
 
             string nameForTransliteration = GetTransliterationNameFromUser(validators);
 
-            var transliteratedName = 
-                GetTransliteratedName(nameForTransliteration, selectedSourceLanguageId, selectedTargetLanguageId, selectedSourceLanguage.Name);
+            var transliteratedName = nameTransliterator.GetTransliteratedName(
+                nameForTransliteration, 
+                selectedSourceLanguageId, 
+                selectedTargetLanguageId, 
+                selectedSourceLanguage.Name);
 
             Console.WriteLine(
                 "Name transliterated ({0} - {1}): {2}",
@@ -200,102 +205,6 @@
 
             return nameForTransliteration;
         }
-
-        public static List<SourceLanguageViewModel> GetSourceLanguages()
-        {
-            var nameTransliterator = new NameTransliterator();
-
-            try
-            {
-                cachedTransliterationModels = nameTransliterator.LoadTransliterationModels();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-
-            List<SourceLanguageViewModel> sourceLanguages = nameTransliterator.GetSourceLanguages(cachedTransliterationModels);
-
-            return sourceLanguages;
-        }
-
-        public static List<TargetLanguageViewModel> GetTargetLanguages()
-        {
-            var nameTransliterator = new NameTransliterator();
-
-            try
-            {
-                cachedTransliterationModels = nameTransliterator.LoadTransliterationModels();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-
-            List<TargetLanguageViewModel> targetLanguages = nameTransliterator.GetTargetLanguages(cachedTransliterationModels);
-
-            return targetLanguages;
-        }
-
-        public static string GetTransliteratedName(
-            string nameForTransliteration, 
-            int sourceLanguageId,
-            int targetLanguageId,
-            string sourceLanguageName)
-        {
-            if (sourceLanguageName.ToLower() == "english")
-            {
-                bool nameExistInDictionary = NameTransliteratorCollections
-                    .LatinCyrillicNamesDictionary
-                    .TryGetValue(nameForTransliteration, out string transliteratedNameFromDict);
-
-                if (nameExistInDictionary)
-                {
-                    return transliteratedNameFromDict.CapitalizeEachWord();
-                }
-            }
-
-            var transliterationModels = new List<TransliterationModel>();
-
-            var nameTransliterator = new NameTransliterator();
-
-            if (cachedTransliterationModels == null || cachedTransliterationModels.Count == 0)
-            {
-                try
-                {
-                    cachedTransliterationModels = nameTransliterator.LoadTransliterationModels();
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.Message);
-                }
-            }
-
-            var searchedTransliterationModel = cachedTransliterationModels
-                .FirstOrDefault(
-                    tm => 
-                        tm.SourceLanguageId == sourceLanguageId && 
-                        tm.TargetLanguageId == targetLanguageId && 
-                        !tm.IsDeleted);
-
-            if (searchedTransliterationModel == null)
-            {
-                throw new Exception("The searchedTransliterationModel is null.");
-            }
-
-            string transliteratedName = string.Empty;
-
-            try
-            {
-                transliteratedName =
-                    nameTransliterator.TransliterateName(searchedTransliterationModel, nameForTransliteration);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-
-            return transliteratedName;
-        }
     }
 }
+

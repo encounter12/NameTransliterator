@@ -4,15 +4,81 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
 
+using NameTransliterator.Data.UnitOfWork;
 using NameTransliterator.Models.DomainModels;
 using NameTransliterator.Models.ViewModels;
-using NameTransliterator.Services.Models;
+using NameTransliterator.Services.Abstractions;
 
 namespace NameTransliterator.Services
 {
-    public class NameTransliterator
+    public class NameTransliterator : INameTransliterator
     {
+        private readonly IUnitOfWork unitOfWork;
+
+        public NameTransliterator(IUnitOfWork unitOfWork)
+        {
+            this.unitOfWork = unitOfWork;
+        }
+
+        public string GetTransliteratedName(
+            string nameForTransliteration,
+            int sourceLanguageId,
+            int targetLanguageId,
+            string sourceLanguageName)
+        {
+            if (sourceLanguageName.ToLower() == "english")
+            {
+                bool nameExistInDictionary = NameTransliteratorCollections
+                    .LatinCyrillicNamesDictionary
+                    .TryGetValue(nameForTransliteration, out string transliteratedNameFromDict);
+
+                if (nameExistInDictionary)
+                {
+                    return transliteratedNameFromDict.CapitalizeEachWord();
+                }
+            }
+
+            IQueryable<TransliterationModel> transliterationModels = null;
+
+            try
+            {
+                transliterationModels = this.LoadTransliterationModels();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            var searchedTransliterationModel = transliterationModels
+                .Include(tm => tm.TransliterationRules)
+                .FirstOrDefault(
+                    tm =>
+                        tm.SourceLanguageId == sourceLanguageId &&
+                        tm.TargetLanguageId == targetLanguageId &&
+                        !tm.IsDeleted);
+
+            if (searchedTransliterationModel == null)
+            {
+                throw new Exception("The searchedTransliterationModel is null.");
+            }
+
+            string transliteratedName = string.Empty;
+
+            try
+            {
+                transliteratedName =
+                    this.TransliterateName(searchedTransliterationModel, nameForTransliteration);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return transliteratedName;
+        }
+
         public string TransliterateName(TransliterationModel transliterationModel, string nameForTransliteration)
         {
             if (transliterationModel == null)
@@ -28,10 +94,13 @@ namespace NameTransliterator.Services
             string transliteratedName = String.Copy(nameForTransliteration)
                 .Trim().ConvertMultipleWhitespacesToSingleSpaces().ToLower();
 
-            foreach (var item in transliterationModel.TransliterationRules)
+            var sortedTransliterationRules = transliterationModel.TransliterationRules.OrderBy(tr => tr.ExecutionOrder);
+
+            foreach (var transliterationRule in sortedTransliterationRules)
             {
-                string pattern = item.SourceExpression;
-                transliteratedName = Regex.Replace(transliteratedName, pattern, item.TargetExpression, RegexOptions.IgnoreCase);
+                string pattern = transliterationRule.SourceExpression;
+                transliteratedName = 
+                    Regex.Replace(transliteratedName, pattern, transliterationRule.TargetExpression, RegexOptions.IgnoreCase);
             }
 
             transliteratedName = transliteratedName.CapitalizeEachWord();
@@ -39,8 +108,19 @@ namespace NameTransliterator.Services
             return transliteratedName;
         }
 
-        public List<SourceLanguageViewModel> GetSourceLanguages(List<TransliterationModel> transliterationModels)
+        public List<SourceLanguageViewModel> GetSourceLanguages()
         {
+            IQueryable<TransliterationModel> transliterationModels = null;
+
+            try
+            {
+                transliterationModels = this.LoadTransliterationModels();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
             var sourceLanguages = new List<SourceLanguageViewModel>();
 
             sourceLanguages = transliterationModels
@@ -57,8 +137,19 @@ namespace NameTransliterator.Services
             return sourceLanguages;
         }
 
-        public List<TargetLanguageViewModel> GetTargetLanguages(List<TransliterationModel> transliterationModels)
+        public List<TargetLanguageViewModel> GetTargetLanguages()
         {
+            IQueryable<TransliterationModel> transliterationModels = null;
+
+            try
+            {
+                transliterationModels = this.LoadTransliterationModels();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
             var targetLanguages = new List<TargetLanguageViewModel>();
 
             targetLanguages = transliterationModels.Select(tm => new TargetLanguageViewModel
@@ -71,23 +162,10 @@ namespace NameTransliterator.Services
             return targetLanguages;
         }
 
-        public string TransliterateName(IDictionary<string, string> namesDictionary, string nameForTransliteration)
-        {
-            string transliteratedName;
-
-            bool nameExists = namesDictionary.TryGetValue(nameForTransliteration, out transliteratedName);
-
-            return transliteratedName;
-        }
-
-        public List<TransliterationModel> LoadTransliterationModels()
-        {
-            var transliterationModels = new List<TransliterationModel>();
-  
-            // transliterationModels = this.LoadTransliterationModelsFromTextFiles();
-            transliterationModels = TransliterationModelsData.GetTransliterationModels();
-
-            return transliterationModels;
+        public IQueryable<TransliterationModel> LoadTransliterationModels()
+        {  
+            // return this.LoadTransliterationModelsFromTextFiles();
+            return this.unitOfWork.TransliterationModelRepository.All().Where(tm => tm.IsOfficial);
         }
 
         public List<TransliterationModel> LoadTransliterationModelsFromTextFiles()

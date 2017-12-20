@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+
 using NameTransliterator.Data.Context;
-using NameTransliterator.Data.Repositories;
-using NameTransliterator.Data.Repositories.Abstractions;
+using NameTransliterator.Data.UnitOfWork;
+using NameTransliterator.Services.Abstractions;
 
 namespace NameTransliterator.DI
 {
@@ -12,26 +13,18 @@ namespace NameTransliterator.DI
         {
             if (dependencyInjectorName == "BuiltInDependencyInjector")
             {
-                BindDbContext(services);
-                BindRepositories(services);
+                services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
+                services.AddScoped<IUnitOfWork, UnitOfWork>();
+
                 BindServicesFromServiceProject(services);
             }
 
             return services;
         }
 
-        public static void BindDbContext(IServiceCollection services)
-        {
-            services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
-        }
-
-        public static void BindRepositories(IServiceCollection services)
-        {
-            services.AddScoped<IApplicationUserRepository, ApplicationUserRepository>();
-        }
-
         public static void BindServicesFromServiceProject(IServiceCollection services)
         {
+            services.AddScoped<INameTransliterator, Services.NameTransliterator>();
         }
     }
 }
