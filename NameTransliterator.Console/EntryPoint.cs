@@ -4,17 +4,17 @@
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.AspNetCore.Identity;
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.DependencyInjection;
 
     using NameTransliterator.Data.Context;
     using NameTransliterator.Data.Seed;
     using NameTransliterator.DI;
+    using NameTransliterator.Helpers;
     using NameTransliterator.Models.Enumerations;
     using NameTransliterator.Models.ViewModels;
     using NameTransliterator.Models.IdentityModels;
     using NameTransliterator.Services.Abstractions;
-    using NameTransliterator.Helpers;
 
     public class EntryPoint
     {
@@ -58,25 +58,11 @@
                 Environment.Exit(1);
             }
 
-            var validators = new Validators();
-
             var sourceLanguages = new List<SourceLanguageViewModel>();
-
-            var targetLanguages = new List<TargetLanguageViewModel>();
 
             try
             {
                 sourceLanguages = nameTransliterator.GetSourceLanguages();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                Environment.Exit(1);
-            }
-
-            try
-            {
-                targetLanguages = nameTransliterator.GetTargetLanguages();
             }
             catch (Exception ex)
             {
@@ -99,15 +85,14 @@
 
             Console.WriteLine();
 
-            var filteredTargetLanguages = targetLanguages
-                .Where(tl => selectedSourceLanguage.TargetLanguageIds.Contains(tl.Id))
-                .ToList();
+            var targetLanguages = selectedSourceLanguage.TargetLanguages.ToList();
 
-            List<ILanguageViewModel> filteredTargetLanguagesBase = filteredTargetLanguages.ToList<ILanguageViewModel>();
+            List<ILanguageViewModel> targetLanguagesBase = targetLanguages.ToList<ILanguageViewModel>();
 
-            int selectedTargetLanguageId = GetLanguageIdFromUser(filteredTargetLanguagesBase, LanguageType.Target);
+            int selectedTargetLanguageId = GetLanguageIdFromUser(targetLanguagesBase, LanguageType.Target);
 
-            TargetLanguageViewModel selectedTargetLanguage = targetLanguages.FirstOrDefault(tl => tl.Id == selectedTargetLanguageId);
+            TargetLanguageViewModel selectedTargetLanguage = 
+                targetLanguages.FirstOrDefault(tl => tl.Id == selectedTargetLanguageId);
 
             if (selectedTargetLanguage == null)
             {
@@ -115,10 +100,13 @@
                 Environment.Exit(1);
             }
 
-            //TODO: Create UserTransliterationInputModel and use data annotations and self-validating models (implement IValidatableObject), 
+            // TODO: Create UserTransliterationInputModel and use data annotations and 
+            // self -validating models (implement IValidatableObject), 
             // see: https://stackoverflow.com/a/3783328, and https://stackoverflow.com/a/29327343
 
             Console.WriteLine();
+
+            var validators = new Validators();
 
             string nameForTransliteration = GetTransliterationNameFromUser(validators);
 

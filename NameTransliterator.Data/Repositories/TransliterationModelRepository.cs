@@ -35,7 +35,11 @@
                     {
                         Id = group.Key,
                         Name = group.Select(g => g.SourceLanguage.Name).First(),
-                        TargetLanguageIds = group.Select(g => g.TargetLanguageId).ToList()
+                        TargetLanguages = group.Select(g => new TargetLanguageViewModel()
+                        {
+                            Id = g.TargetLanguageId,
+                            Name = g.TargetLanguage.Name
+                        })
                     })
                     .OrderBy(tm => tm.Name);
             }
