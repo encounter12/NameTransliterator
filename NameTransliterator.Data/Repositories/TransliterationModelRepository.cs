@@ -47,28 +47,6 @@
             return sourceLanguages;
         }
 
-        public IQueryable<TargetLanguageViewModel> GetTargetLanguages(
-            bool transliterationModelOfficial,
-            bool transliterationModelActive)
-        {
-            IQueryable<TransliterationModel> transliterationModels = 
-                this.LoadTransliterationModels(transliterationModelOfficial, transliterationModelActive);
-
-            IOrderedQueryable<TargetLanguageViewModel> targetLanguages = null;
-
-            if (transliterationModels != null)
-            {
-                targetLanguages = transliterationModels.Select(tm => new TargetLanguageViewModel
-                {
-                    Id = tm.TargetLanguageId,
-                    Name = tm.TargetLanguage.Name
-                })
-                .OrderBy(tl => tl.Name);
-            }
-
-            return targetLanguages;
-        }
-
         private IQueryable<TransliterationModel> LoadTransliterationModels(
             bool transliterationModelOfficial, 
             bool transliterationModelActive)

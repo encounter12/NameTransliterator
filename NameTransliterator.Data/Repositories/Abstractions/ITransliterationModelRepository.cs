@@ -10,9 +10,5 @@
         IQueryable<SourceLanguageViewModel> GetSourceLanguages(
             bool transliterationModelOfficial,
             bool transliterationModelActive);
-
-        IQueryable<TargetLanguageViewModel> GetTargetLanguages(
-            bool transliterationModelOfficial,
-            bool transliterationModelActive);
     }
 }

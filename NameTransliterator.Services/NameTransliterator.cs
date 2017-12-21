@@ -113,19 +113,5 @@ namespace NameTransliterator.Services
 
             return sourceLanguages;
         }
-
-        public List<TargetLanguageViewModel> GetTargetLanguages()
-        {
-            var transliterationModelOfficial = true;
-
-            var transliterationModelActive = true;
-
-            var targetLanguages = this.unitOfWork
-                .TransliterationModelRepository
-                .GetTargetLanguages(transliterationModelOfficial, transliterationModelActive)
-                .ToList();
-
-            return targetLanguages;
-        }
     }
 }

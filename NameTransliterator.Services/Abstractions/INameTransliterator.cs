@@ -8,8 +8,6 @@ namespace NameTransliterator.Services.Abstractions
     {
         List<SourceLanguageViewModel> GetSourceLanguages();
 
-        List<TargetLanguageViewModel> GetTargetLanguages();
-
         string GetTransliteratedName(
             string nameForTransliteration,
             int sourceLanguageId,
