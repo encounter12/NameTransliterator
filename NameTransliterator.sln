@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NameTransliterator.Models",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NameTransliterator.Data", "NameTransliterator.Data\NameTransliterator.Data.csproj", "{FEED4B64-16F7-4800-AE2D-5CAA8648A495}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NameTransliterator.DI", "NameTransliterator.DI\NameTransliterator.DI.csproj", "{6E849BAB-E549-4DC4-9BC3-013C2D384080}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NameTransliterator.DI", "NameTransliterator.DI\NameTransliterator.DI.csproj", "{6E849BAB-E549-4DC4-9BC3-013C2D384080}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NameTransliterator.Helpers", "NameTransliterator.Helpers\NameTransliterator.Helpers.csproj", "{E5A9ADD7-D118-47E5-97EE-57EA86154384}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{6E849BAB-E549-4DC4-9BC3-013C2D384080}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E849BAB-E549-4DC4-9BC3-013C2D384080}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E849BAB-E549-4DC4-9BC3-013C2D384080}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5A9ADD7-D118-47E5-97EE-57EA86154384}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5A9ADD7-D118-47E5-97EE-57EA86154384}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5A9ADD7-D118-47E5-97EE-57EA86154384}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5A9ADD7-D118-47E5-97EE-57EA86154384}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

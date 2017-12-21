@@ -1,14 +1,18 @@
-﻿using NameTransliterator.Models.DomainModels;
+﻿using System;
+using System.IO;
+using System.Linq;
 
-namespace NameTransliterator.Services
+using NameTransliterator.Helpers;
+using NameTransliterator.Models.DomainModels;
+
+namespace NameTransliterator.Data
 {
-    using System;
-    using System.IO;
-    using System.Linq;
-    using System.Text.RegularExpressions;
-
     public class Deserializer
     {
+        public Deserializer()
+        {
+        }
+
         public TransliterationModel Deserialize(string filePath, int languagePairId)
         {
             var transliterationModel = new TransliterationModel();
@@ -39,12 +43,17 @@ namespace NameTransliterator.Services
 
                         if (languagePairArray != null && languagePairArray.Length == 2)
                         {
-                            string modelSourceLanguage = languagePairArray[0].CapitalizeStringFirstChar();
-                            string modelTargetLanguage = languagePairArray[1].CapitalizeStringFirstChar();
+                            var sourceLanguage = new Language()
+                            {
+                                Id = 1,
+                                Name = languagePairArray[0].CapitalizeStringFirstChar()
+                            };
 
-                            Language sourceLanguage = TestData.Languages.FirstOrDefault(l => l.Name == modelSourceLanguage);
-
-                            Language targetLanguage = TestData.Languages.FirstOrDefault(l => l.Name == modelTargetLanguage);
+                            var targetLanguage = new Language()
+                            {
+                                Id = 2,
+                                Name = languagePairArray[1].CapitalizeStringFirstChar()
+                            };
 
                             //checks if the current line elements are languages
                             //TODO: Set markup specifying the language set line (e.g. <Bulgarian - English>)
@@ -78,8 +87,8 @@ namespace NameTransliterator.Services
 
                         if (transliterationRuleArray != null && transliterationRuleArray.Length == 3)
                         {
-                            bool isKeyValidRegexPattern = IsRegexPatternValid(transliterationRuleArray[0]);
-                            bool isValueValidRegexPattern = IsRegexPatternValid(transliterationRuleArray[1]);
+                            bool isKeyValidRegexPattern = validators.IsRegexPatternValid(transliterationRuleArray[0]);
+                            bool isValueValidRegexPattern = validators.IsRegexPatternValid(transliterationRuleArray[1]);
                             bool transliterationRuleNotExist =
                                 !transliterationModel.TransliterationRules.Any(rule => rule.SourceExpression == transliterationRuleArray[0]);
 
@@ -117,21 +126,6 @@ namespace NameTransliterator.Services
             }
 
             return transliterationModel;
-        }
-
-        public static bool IsRegexPatternValid(string pattern)
-        {
-            try
-            {
-                new Regex(pattern);
-
-                return true;
-            }
-            catch
-            {
-            }
-
-            return false;
         }
     }
 }

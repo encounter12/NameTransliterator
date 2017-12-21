@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
-using Microsoft.EntityFrameworkCore;
 
 using NameTransliterator.Data.UnitOfWork;
+using NameTransliterator.Helpers;
 using NameTransliterator.Models.DomainModels;
 using NameTransliterator.Models.ViewModels;
 using NameTransliterator.Services.Abstractions;
@@ -40,26 +38,18 @@ namespace NameTransliterator.Services
                 }
             }
 
-            IQueryable<TransliterationModel> transliterationModels = null;
+            var transliterationModelOfficial = true;
+            var transliterationModelActive = true;
 
-            try
-            {
-                transliterationModels = this.LoadTransliterationModels();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            var selectedModelTransliterationRules = this.unitOfWork
+                .TransliterationRuleRepository
+                .GetSelectedModelTransliterationRules(
+                    transliterationModelOfficial, 
+                    transliterationModelActive, 
+                    sourceLanguageId, 
+                    targetLanguageId);
 
-            var searchedTransliterationModel = transliterationModels
-                .Include(tm => tm.TransliterationRules)
-                .FirstOrDefault(
-                    tm =>
-                        tm.SourceLanguageId == sourceLanguageId &&
-                        tm.TargetLanguageId == targetLanguageId &&
-                        !tm.IsDeleted);
-
-            if (searchedTransliterationModel == null)
+            if (selectedModelTransliterationRules == null)
             {
                 throw new Exception("The searchedTransliterationModel is null.");
             }
@@ -69,7 +59,7 @@ namespace NameTransliterator.Services
             try
             {
                 transliteratedName =
-                    this.TransliterateName(searchedTransliterationModel, nameForTransliteration);
+                    this.TransliterateName(selectedModelTransliterationRules, nameForTransliteration);
             }
             catch (Exception ex)
             {
@@ -79,11 +69,11 @@ namespace NameTransliterator.Services
             return transliteratedName;
         }
 
-        public string TransliterateName(TransliterationModel transliterationModel, string nameForTransliteration)
+        private string TransliterateName(IQueryable<TransliterationRule> transliterationRules, string nameForTransliteration)
         {
-            if (transliterationModel == null)
+            if (transliterationRules == null)
             {
-                throw new ArgumentNullException("The transliteration model is null");
+                throw new ArgumentNullException("The transliteration rules are null");
             }
 
             if (string.IsNullOrEmpty(nameForTransliteration))
@@ -94,13 +84,15 @@ namespace NameTransliterator.Services
             string transliteratedName = String.Copy(nameForTransliteration)
                 .Trim().ConvertMultipleWhitespacesToSingleSpaces().ToLower();
 
-            var sortedTransliterationRules = transliterationModel.TransliterationRules.OrderBy(tr => tr.ExecutionOrder);
-
-            foreach (var transliterationRule in sortedTransliterationRules)
+            foreach (var transliterationRule in transliterationRules)
             {
                 string pattern = transliterationRule.SourceExpression;
-                transliteratedName = 
-                    Regex.Replace(transliteratedName, pattern, transliterationRule.TargetExpression, RegexOptions.IgnoreCase);
+
+                transliteratedName = Regex.Replace(
+                    transliteratedName, 
+                    pattern, 
+                    transliterationRule.TargetExpression, 
+                    RegexOptions.IgnoreCase);
             }
 
             transliteratedName = transliteratedName.CapitalizeEachWord();
@@ -110,28 +102,13 @@ namespace NameTransliterator.Services
 
         public List<SourceLanguageViewModel> GetSourceLanguages()
         {
-            IQueryable<TransliterationModel> transliterationModels = null;
+            var transliterationModelOfficial = true;
 
-            try
-            {
-                transliterationModels = this.LoadTransliterationModels();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            var transliterationModelActive = true;
 
-            var sourceLanguages = new List<SourceLanguageViewModel>();
-
-            sourceLanguages = transliterationModels
-                .GroupBy(tm => tm.SourceLanguageId)
-                .Select(group => new SourceLanguageViewModel
-                {
-                    Id = group.Key,
-                    Name = group.Select(g => g.SourceLanguage.Name).First(),
-                    TargetLanguageIds = group.Select(g => g.TargetLanguageId).ToList()
-                })
-                .OrderBy(tm => tm.Name)
+            var sourceLanguages = this.unitOfWork
+                .TransliterationModelRepository
+                .GetSourceLanguages(transliterationModelOfficial, transliterationModelActive)
                 .ToList();
 
             return sourceLanguages;
@@ -139,72 +116,16 @@ namespace NameTransliterator.Services
 
         public List<TargetLanguageViewModel> GetTargetLanguages()
         {
-            IQueryable<TransliterationModel> transliterationModels = null;
+            var transliterationModelOfficial = true;
 
-            try
-            {
-                transliterationModels = this.LoadTransliterationModels();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            var transliterationModelActive = true;
 
-            var targetLanguages = new List<TargetLanguageViewModel>();
-
-            targetLanguages = transliterationModels.Select(tm => new TargetLanguageViewModel
-            {
-                Id = tm.TargetLanguageId,
-                Name = tm.TargetLanguage.Name
-            })
-            .ToList();
+            var targetLanguages = this.unitOfWork
+                .TransliterationModelRepository
+                .GetTargetLanguages(transliterationModelOfficial, transliterationModelActive)
+                .ToList();
 
             return targetLanguages;
-        }
-
-        public IQueryable<TransliterationModel> LoadTransliterationModels()
-        {  
-            // return this.LoadTransliterationModelsFromTextFiles();
-            return this.unitOfWork.TransliterationModelRepository.All().Where(tm => tm.IsOfficial);
-        }
-
-        public List<TransliterationModel> LoadTransliterationModelsFromTextFiles()
-        {
-            var relativeFilePath = "TransliterationSetTextFiles";
-
-            // var currentAssemblyDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
-            var currentAssemblyDirectoryPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-            string transliterationFilesDirPath = Path.Combine(currentAssemblyDirectoryPath, relativeFilePath);
-
-            IEnumerable<string> files = 
-                Directory.EnumerateFiles(transliterationFilesDirPath, "*.txt", SearchOption.AllDirectories);
-
-            var deserializer = new Deserializer();
-
-            var transliterationModels = new List<TransliterationModel>();
-
-            int fileCounter = 1;
-
-            foreach (var file in files)
-            {
-                try
-                {
-                    var transliterationModel = new TransliterationModel();
-
-                    transliterationModel = deserializer.Deserialize(file, fileCounter);
-
-                    transliterationModels.Add(transliterationModel);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.Message);
-                }
-
-                fileCounter++;
-            }
-
-            return transliterationModels;
         }
     }
 }

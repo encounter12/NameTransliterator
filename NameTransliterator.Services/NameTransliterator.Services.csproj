@@ -5,20 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="TransliterationSetTextFiles\Bulgarian-English.txt" />
-    <None Remove="TransliterationSetTextFiles\English-Bulgarian.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="TransliterationSetTextFiles\Bulgarian-English.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TransliterationSetTextFiles\English-Bulgarian.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Documentation\" />
   </ItemGroup>
 

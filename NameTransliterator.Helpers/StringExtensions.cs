@@ -1,4 +1,4 @@
-﻿namespace NameTransliterator.Services
+﻿namespace NameTransliterator.Helpers
 {
     using System;
     using System.Globalization;

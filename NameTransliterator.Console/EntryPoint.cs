@@ -13,8 +13,8 @@
     using NameTransliterator.Models.Enumerations;
     using NameTransliterator.Models.ViewModels;
     using NameTransliterator.Models.IdentityModels;
-    using NameTransliterator.Services;
     using NameTransliterator.Services.Abstractions;
+    using NameTransliterator.Helpers;
 
     public class EntryPoint
     {
@@ -88,7 +88,8 @@
 
             int selectedSourceLanguageId = GetLanguageIdFromUser(sourceLanguagesBase, LanguageType.Source);
 
-            SourceLanguageViewModel selectedSourceLanguage = sourceLanguages.FirstOrDefault(sl => sl.Id == selectedSourceLanguageId);
+            SourceLanguageViewModel selectedSourceLanguage = sourceLanguages
+                .FirstOrDefault(sl => sl.Id == selectedSourceLanguageId);
 
             if (selectedSourceLanguage == null)
             {
