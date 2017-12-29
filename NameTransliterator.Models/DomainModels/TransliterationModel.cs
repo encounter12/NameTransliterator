@@ -2,11 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
     using NameTransliterator.Models.SystemModels;
     using NameTransliterator.Models.IdentityModels;
-    using System.ComponentModel.DataAnnotations;
 
     public class TransliterationModel : AuditableEntity
     {
@@ -26,14 +26,19 @@
         }
 
         [ForeignKey("Language")]
-        public int SourceLanguageId { get; set; }
+        public int OriginLanguageId { get; set; }
 
-        public virtual Language SourceLanguage { get; set; }
+        public virtual Language OriginLanguage { get; set; }
 
         [ForeignKey("Language")]
-        public int? TargetLanguageId { get; set; }
+        public int? SourceAlphabetId { get; set; }
 
-        public virtual Language TargetLanguage { get; set; }
+        public virtual Language SourceAlphabet { get; set; }
+
+        [ForeignKey("Language")]
+        public int? TargetAlphabetId { get; set; }
+
+        public virtual Language TargetAlphabet { get; set; }
 
         public DateTime ValidFrom { get; set; }
 

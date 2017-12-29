@@ -263,10 +263,11 @@ namespace NameTransliterator.Data.Migrations
                     LastUpdatedOn = table.Column<DateTime>(nullable: true),
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    SourceLanguageId = table.Column<int>(nullable: false),
-                    TargetLanguageId = table.Column<int>(nullable: true),
+                    OriginLanguageId = table.Column<int>(nullable: false),
+                    SourceAlphabetId = table.Column<int>(nullable: true),
+                    TargetAlphabetId = table.Column<int>(nullable: true),
                     ValidFrom = table.Column<DateTime>(nullable: false),
-                    ValidTo = table.Column<DateTime>(nullable: false),
+                    ValidTo = table.Column<DateTime>(nullable: true),
                     TransliterationTypeId = table.Column<int>(nullable: false),
                     AuthorId = table.Column<int>(nullable: false),
                     IsOfficial = table.Column<bool>(nullable: false),
@@ -289,14 +290,20 @@ namespace NameTransliterator.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TransliterationModels_Languages_SourceLanguageId",
-                        column: x => x.SourceLanguageId,
+                        name: "FK_TransliterationModels_Languages_OriginLanguageId",
+                        column: x => x.OriginLanguageId,
                         principalTable: "Languages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TransliterationModels_Languages_TargetLanguageId",
-                        column: x => x.TargetLanguageId,
+                        name: "FK_TransliterationModels_Languages_SourceAlphabetId",
+                        column: x => x.SourceAlphabetId,
+                        principalTable: "Languages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TransliterationModels_Languages_TargetAlphabetId",
+                        column: x => x.TargetAlphabetId,
                         principalTable: "Languages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -320,25 +327,29 @@ namespace NameTransliterator.Data.Migrations
                     LastUpdatedOn = table.Column<DateTime>(nullable: true),
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    SourceNameId = table.Column<int>(nullable: false),
-                    TargetNameId = table.Column<int>(nullable: true),
+                    NameOriginLanguageId = table.Column<int>(nullable: false),
+                    SourceName = table.Column<string>(nullable: true),
+                    SourceNameAlphabetId = table.Column<int>(nullable: false),
+                    TargetName = table.Column<string>(nullable: true),
+                    TargetNameAlphabetId = table.Column<int>(nullable: false),
+                    AuthorId = table.Column<int>(nullable: false),
                     TransliterationModelId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TransliterationDictionaries", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TransliterationDictionaries_Names_SourceNameId",
-                        column: x => x.SourceNameId,
-                        principalTable: "Names",
+                        name: "FK_TransliterationDictionaries_Authors_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "Authors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TransliterationDictionaries_Names_TargetNameId",
-                        column: x => x.TargetNameId,
-                        principalTable: "Names",
+                        name: "FK_TransliterationDictionaries_Languages_NameOriginLanguageId",
+                        column: x => x.NameOriginLanguageId,
+                        principalTable: "Languages",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TransliterationDictionaries_TransliterationModels_TransliterationModelId",
                         column: x => x.TransliterationModelId,
@@ -361,6 +372,7 @@ namespace NameTransliterator.Data.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     SourceExpression = table.Column<string>(nullable: true),
                     TargetExpression = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
                     ExecutionOrder = table.Column<int>(nullable: false),
                     TransliterationModelId = table.Column<int>(nullable: false)
                 },
@@ -425,14 +437,14 @@ namespace NameTransliterator.Data.Migrations
                 column: "OriginLanguageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TransliterationDictionaries_SourceNameId",
+                name: "IX_TransliterationDictionaries_AuthorId",
                 table: "TransliterationDictionaries",
-                column: "SourceNameId");
+                column: "AuthorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TransliterationDictionaries_TargetNameId",
+                name: "IX_TransliterationDictionaries_NameOriginLanguageId",
                 table: "TransliterationDictionaries",
-                column: "TargetNameId");
+                column: "NameOriginLanguageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TransliterationDictionaries_TransliterationModelId",
@@ -450,14 +462,19 @@ namespace NameTransliterator.Data.Migrations
                 column: "AuthorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TransliterationModels_SourceLanguageId",
+                name: "IX_TransliterationModels_OriginLanguageId",
                 table: "TransliterationModels",
-                column: "SourceLanguageId");
+                column: "OriginLanguageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TransliterationModels_TargetLanguageId",
+                name: "IX_TransliterationModels_SourceAlphabetId",
                 table: "TransliterationModels",
-                column: "TargetLanguageId");
+                column: "SourceAlphabetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TransliterationModels_TargetAlphabetId",
+                table: "TransliterationModels",
+                column: "TargetAlphabetId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TransliterationModels_TransliterationTypeId",
@@ -488,6 +505,9 @@ namespace NameTransliterator.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Names");
+
+            migrationBuilder.DropTable(
                 name: "TransliterationDictionaries");
 
             migrationBuilder.DropTable(
@@ -495,9 +515,6 @@ namespace NameTransliterator.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "Names");
 
             migrationBuilder.DropTable(
                 name: "TransliterationModels");

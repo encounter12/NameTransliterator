@@ -17,7 +17,7 @@
         {
         }
 
-        public IQueryable<SourceLanguageViewModel> GetSourceLanguages(
+        public IQueryable<SourceLanguageViewModel> GetSourceAlphabets(
             bool transliterationModelOfficial, 
             bool transliterationModelActive)
         {
@@ -25,26 +25,26 @@
                 transliterationModelOfficial,
                 transliterationModelActive);
 
-            IOrderedQueryable<SourceLanguageViewModel> sourceLanguages = null; 
+            IOrderedQueryable<SourceLanguageViewModel> sourceAlphabets = null; 
 
             if (transliterationModels != null)
             {
-                sourceLanguages = transliterationModels
-                    .GroupBy(tm => tm.SourceLanguageId)
+                sourceAlphabets = transliterationModels
+                    .GroupBy(tm => tm.SourceAlphabetId)
                     .Select(group => new SourceLanguageViewModel
                     {
                         Id = group.Key,
-                        Name = group.Select(g => g.SourceLanguage.Name).First(),
+                        Name = group.Select(g => g.SourceAlphabet.Name).First(),
                         TargetLanguages = group.Select(g => new TargetLanguageViewModel()
                         {
-                            Id = g.TargetLanguageId,
-                            Name = g.TargetLanguage.Name
+                            Id = g.TargetAlphabetId,
+                            Name = g.TargetAlphabet.Name
                         })
                     })
                     .OrderBy(tm => tm.Name);
             }
 
-            return sourceLanguages;
+            return sourceAlphabets;
         }
 
         private IQueryable<TransliterationModel> LoadTransliterationModels(

@@ -7,7 +7,7 @@
 
     public interface ITransliterationModelRepository : IAuditableEntityRepository<TransliterationModel>
     {
-        IQueryable<SourceLanguageViewModel> GetSourceLanguages(
+        IQueryable<SourceLanguageViewModel> GetSourceAlphabets(
             bool transliterationModelOfficial,
             bool transliterationModelActive);
     }

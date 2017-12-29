@@ -15,15 +15,15 @@
         public IQueryable<TransliterationRule> GetSelectedModelTransliterationRules(
             bool transliterationModelOfficial,
             bool transliterationModelActive,
-            int sourceLanguageId,
-            int targetLanguageId)
+            int sourceAlphabetId,
+            int targetAlphabetId)
         {
             var transliterationRules = this.All()
                 .Where
                 (
                     tr =>
-                        tr.TransliterationModel.SourceLanguageId == sourceLanguageId &&
-                        tr.TransliterationModel.TargetLanguageId == targetLanguageId &&
+                        tr.TransliterationModel.SourceAlphabetId == sourceAlphabetId &&
+                        tr.TransliterationModel.TargetAlphabetId == targetAlphabetId &&
                         tr.TransliterationModel.IsOfficial == transliterationModelOfficial &&
                         tr.TransliterationModel.IsActive == transliterationModelActive
                 )

@@ -22,6 +22,8 @@
 
         public string TargetExpression { get; set; }
 
+        public string Description { get; set; }
+
         public int ExecutionOrder { get; set; }
 
         public int TransliterationModelId { get; set; }

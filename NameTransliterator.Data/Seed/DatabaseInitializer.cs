@@ -117,14 +117,15 @@ namespace NameTransliterator.Data.Seed
             {
                 transliterationModelEnglishToBulgarian = new TransliterationModel
                 {
-                    SourceLanguageId = englishLanguage.Id,
-                    TargetLanguageId = bulgarianLanguage.Id,
+                    OriginLanguageId = bulgarianLanguage.Id,
+                    SourceAlphabetId = englishLanguage.Id,
+                    TargetAlphabetId = bulgarianLanguage.Id,
                     ValidFrom = DateTime.Now,
                     ValidTo = DateTime.Now.AddMonths(1),
+                    TransliterationTypeId = transliterationType.Id,
                     AuthorId = author.Id,
                     IsOfficial = true,
                     IsActive = true,
-                    TransliterationTypeId = transliterationType.Id,
                     ApplicationUserId = applicationUser.Id,
                     IsDeleted = false
                 };
@@ -133,14 +134,15 @@ namespace NameTransliterator.Data.Seed
 
                 transliterationModelBulgarianToEnglish = new TransliterationModel()
                 {
-                    SourceLanguageId = bulgarianLanguage.Id,
-                    TargetLanguageId = englishLanguage.Id,
+                    OriginLanguageId = bulgarianLanguage.Id,
+                    SourceAlphabetId = bulgarianLanguage.Id,
+                    TargetAlphabetId = englishLanguage.Id,
                     ValidFrom = DateTime.Now,
                     ValidTo = DateTime.Now.AddMonths(1),
+                    TransliterationTypeId = transliterationType.Id,
                     AuthorId = author.Id,
                     IsOfficial = true,
                     IsActive = true,
-                    TransliterationTypeId = transliterationType.Id,
                     ApplicationUserId = applicationUser.Id,
                     IsDeleted = false
                 };
@@ -154,12 +156,12 @@ namespace NameTransliterator.Data.Seed
                 transliterationModelEnglishToBulgarian = context
                     .TransliterationModels
                     .FirstOrDefault(tm =>
-                        tm.SourceLanguageId == englishLanguage.Id && tm.TargetLanguageId == bulgarianLanguage.Id);
+                        tm.SourceAlphabetId == englishLanguage.Id && tm.TargetAlphabetId == bulgarianLanguage.Id);
 
                 transliterationModelBulgarianToEnglish = context
                     .TransliterationModels
                     .FirstOrDefault(tm =>
-                        tm.SourceLanguageId == bulgarianLanguage.Id && tm.TargetLanguageId == englishLanguage.Id);
+                        tm.SourceAlphabetId == bulgarianLanguage.Id && tm.TargetAlphabetId == englishLanguage.Id);
             }
 
             if (!context.TransliterationRules.Any())

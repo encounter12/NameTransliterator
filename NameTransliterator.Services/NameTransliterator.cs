@@ -108,7 +108,7 @@ namespace NameTransliterator.Services
 
             var sourceLanguages = this.unitOfWork
                 .TransliterationModelRepository
-                .GetSourceLanguages(transliterationModelOfficial, transliterationModelActive)
+                .GetSourceAlphabets(transliterationModelOfficial, transliterationModelActive)
                 .ToList();
 
             return sourceLanguages;

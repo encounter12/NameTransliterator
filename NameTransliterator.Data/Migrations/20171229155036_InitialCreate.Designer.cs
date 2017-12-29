@@ -11,14 +11,14 @@ using System;
 namespace NameTransliterator.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20171108213540_InitialCreate")]
+    [Migration("20171229155036_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.0-preview1-27470")
+                .HasAnnotation("ProductVersion", "2.1.0-preview1-27468")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -216,6 +216,8 @@ namespace NameTransliterator.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("AuthorId");
+
                     b.Property<string>("CreatedBy");
 
                     b.Property<DateTime?>("CreatedOn");
@@ -228,17 +230,23 @@ namespace NameTransliterator.Data.Migrations
 
                     b.Property<DateTime?>("LastUpdatedOn");
 
-                    b.Property<int>("SourceNameId");
+                    b.Property<int>("NameOriginLanguageId");
 
-                    b.Property<int?>("TargetNameId");
+                    b.Property<string>("SourceName");
+
+                    b.Property<int>("SourceNameAlphabetId");
+
+                    b.Property<string>("TargetName");
+
+                    b.Property<int>("TargetNameAlphabetId");
 
                     b.Property<int?>("TransliterationModelId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SourceNameId");
+                    b.HasIndex("AuthorId");
 
-                    b.HasIndex("TargetNameId");
+                    b.HasIndex("NameOriginLanguageId");
 
                     b.HasIndex("TransliterationModelId");
 
@@ -271,15 +279,17 @@ namespace NameTransliterator.Data.Migrations
 
                     b.Property<DateTime?>("LastUpdatedOn");
 
-                    b.Property<int>("SourceLanguageId");
+                    b.Property<int>("OriginLanguageId");
 
-                    b.Property<int?>("TargetLanguageId");
+                    b.Property<int?>("SourceAlphabetId");
+
+                    b.Property<int?>("TargetAlphabetId");
 
                     b.Property<int>("TransliterationTypeId");
 
                     b.Property<DateTime>("ValidFrom");
 
-                    b.Property<DateTime>("ValidTo");
+                    b.Property<DateTime?>("ValidTo");
 
                     b.HasKey("Id");
 
@@ -287,9 +297,11 @@ namespace NameTransliterator.Data.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.HasIndex("SourceLanguageId");
+                    b.HasIndex("OriginLanguageId");
 
-                    b.HasIndex("TargetLanguageId");
+                    b.HasIndex("SourceAlphabetId");
+
+                    b.HasIndex("TargetAlphabetId");
 
                     b.HasIndex("TransliterationTypeId");
 
@@ -308,6 +320,8 @@ namespace NameTransliterator.Data.Migrations
                     b.Property<string>("DeletedBy");
 
                     b.Property<DateTime?>("DeletedOn");
+
+                    b.Property<string>("Description");
 
                     b.Property<int>("ExecutionOrder");
 
@@ -474,14 +488,15 @@ namespace NameTransliterator.Data.Migrations
 
             modelBuilder.Entity("NameTransliterator.Models.DomainModels.TransliterationDictionary", b =>
                 {
-                    b.HasOne("NameTransliterator.Models.DomainModels.Name", "SourceName")
+                    b.HasOne("NameTransliterator.Models.DomainModels.Author", "Author")
                         .WithMany()
-                        .HasForeignKey("SourceNameId")
+                        .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("NameTransliterator.Models.DomainModels.Name", "TargetName")
+                    b.HasOne("NameTransliterator.Models.DomainModels.Language", "NameOriginLanguage")
                         .WithMany()
-                        .HasForeignKey("TargetNameId");
+                        .HasForeignKey("NameOriginLanguageId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("NameTransliterator.Models.DomainModels.TransliterationModel", "TransliterationModel")
                         .WithMany()
@@ -500,14 +515,18 @@ namespace NameTransliterator.Data.Migrations
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("NameTransliterator.Models.DomainModels.Language", "SourceLanguage")
+                    b.HasOne("NameTransliterator.Models.DomainModels.Language", "OriginLanguage")
                         .WithMany()
-                        .HasForeignKey("SourceLanguageId")
+                        .HasForeignKey("OriginLanguageId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("NameTransliterator.Models.DomainModels.Language", "TargetLanguage")
+                    b.HasOne("NameTransliterator.Models.DomainModels.Language", "SourceAlphabet")
                         .WithMany()
-                        .HasForeignKey("TargetLanguageId");
+                        .HasForeignKey("SourceAlphabetId");
+
+                    b.HasOne("NameTransliterator.Models.DomainModels.Language", "TargetAlphabet")
+                        .WithMany()
+                        .HasForeignKey("TargetAlphabetId");
 
                     b.HasOne("NameTransliterator.Models.DomainModels.TransliterationType", "TransliterationType")
                         .WithMany()

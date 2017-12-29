@@ -43,13 +43,13 @@ namespace NameTransliterator.Data
 
                         if (languagePairArray != null && languagePairArray.Length == 2)
                         {
-                            var sourceLanguage = new Language()
+                            var sourceAlphabet = new Language()
                             {
                                 Id = 1,
                                 Name = languagePairArray[0].CapitalizeStringFirstChar()
                             };
 
-                            var targetLanguage = new Language()
+                            var targetAlphabet = new Language()
                             {
                                 Id = 2,
                                 Name = languagePairArray[1].CapitalizeStringFirstChar()
@@ -57,13 +57,13 @@ namespace NameTransliterator.Data
 
                             //checks if the current line elements are languages
                             //TODO: Set markup specifying the language set line (e.g. <Bulgarian - English>)
-                            if (sourceLanguage != null && targetLanguage != null)
+                            if (sourceAlphabet != null && targetAlphabet != null)
                             {
-                                transliterationModel.SourceLanguage = sourceLanguage;
-                                transliterationModel.SourceLanguageId = sourceLanguage.Id;
+                                transliterationModel.SourceAlphabet = sourceAlphabet;
+                                transliterationModel.SourceAlphabetId = sourceAlphabet.Id;
 
-                                transliterationModel.TargetLanguage = targetLanguage;
-                                transliterationModel.TargetLanguageId = targetLanguage.Id;
+                                transliterationModel.TargetAlphabet = targetAlphabet;
+                                transliterationModel.TargetAlphabetId = targetAlphabet.Id;
 
                                 isLanguagePairSpecified = true;
                             }
